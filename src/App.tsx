@@ -98,10 +98,10 @@ function App() {
   return (
     <div className="app-shell overflow-x-clip bg-[#f8f8fb] text-ink antialiased">
       <header className={`navbar fixed inset-x-0 top-0 z-50 ${scrolled ? 'navbar--scrolled' : ''}`}>
-        <div className="nav-inner container flex h-full items-center justify-between">
-          <a className="brand" href="#top" aria-label="Callflow home">
+        <div className="nav-inner site-container flex h-full items-center justify-between">
+          <a className="brand" href="#top" aria-label="SellersLogin Virtual Numbers home">
             <span className="brand-mark"><Icon name="call" size={18} /></span>
-            <span>call<span>flow</span></span>
+            <span className="brand-copy"><b>SellersLogin</b><small>Virtual Numbers</small></span>
           </a>
 
           {menuOpen && <button className="nav-backdrop" type="button" aria-label="Close menu" onClick={() => setMenuOpen(false)} />}
@@ -128,11 +128,11 @@ function App() {
           <div className="hero-glow hero-glow--one" />
           <div className="hero-glow hero-glow--two" />
           <div className="hero-grid" />
-          <div className="container hero-layout relative grid items-center gap-[70px] max-[820px]:grid-cols-1 max-[820px]:gap-8 min-[821px]:grid-cols-[1.05fr_.95fr]">
+          <div className="site-container hero-layout relative grid items-center gap-[70px] max-[820px]:grid-cols-1 max-[820px]:gap-8 min-[821px]:grid-cols-[1.05fr_.95fr]">
             <div className="hero-copy reveal relative z-[2] max-[820px]:mx-auto max-[820px]:text-center">
               <div className="eyebrow"><span className="eyebrow-dot" /> Built for ambitious Indian businesses</div>
               <h1>Your business needs <em>one number.</em><br />Not another SIM.</h1>
-              <p className="hero-lead text-white/80">Protect personal numbers, route every customer call intelligently, and let Voice AI answer when your team can’t.</p>
+              <p className="hero-lead text-white/80">Protect personal numbers, route every customer call intelligently and let Voice AI answer when your team can’t.</p>
               <div className="hero-actions flex items-center gap-3 max-[560px]:flex-col max-[560px]:items-stretch">
                 <a className="button button--primary" href="#trial">Start your 14-day free trial <Icon name="arrow" /></a>
                 <a className="button button--ghost" href="#contact"><span className="play-icon">▶</span> Book a live demo</a>
@@ -172,14 +172,14 @@ function App() {
               <div className="float-chip float-chip--connected"><span className="connected-icon"><Icon name="call" size={16} /></span><span><b>Connected</b><small>in 1.2 seconds</small></span></div>
             </div>
           </div>
-          <div className="container trust-row relative z-[4] flex items-center justify-between">
+          <div className="site-container trust-row relative z-[4] flex items-center justify-between">
             <p className="text-white/75">Everything between <strong className="text-white">“Hello”</strong> and <strong className="text-white">conversion</strong> — handled.</p>
-            <div><span>Privacy first</span><span>Always available</span><span>Built to scale</span></div>
+            <div className='text-white'><span>Privacy first</span><span>Always available</span><span>Built to scale</span></div>
           </div>
         </section>
 
-        <section className="section how-section bg-white py-[120px] max-[820px]:py-[90px] max-[560px]:py-[68px]" id="how">
-          <div className="container">
+        <section className="section how-section bg-white" id="how">
+          <div className="site-container">
             <div className="section-heading centered text-center">
               <div className="eyebrow eyebrow--light">How it works</div>
               <h2>From first ring to the right person.<br /><em>Automatically.</em></h2>
@@ -190,11 +190,22 @@ function App() {
               <article className="step-card featured-step"><span className="step-number">02</span><div className="step-visual route-visual"><span><Icon name="call" /></span><i /><span><Icon name="route" /></span><i /><span><Icon name="users" /></span></div><h3>Build your call flow</h3><p>Choose forwarding, masking, smart agents or Voice AI.</p></article>
               <article className="step-card"><span className="step-number">03</span><div className="step-visual live-visual"><span><i /> LIVE</span><b>24/7</b></div><h3>Go live in minutes</h3><p>Receive calls on existing phones and manage it all in one place.</p></article>
             </div>
+            <div className="compact-mask-panel">
+              <div className="compact-mask-copy">
+                <span className="feature-icon"><Icon name="shield" size={21} /></span>
+                <div><small>CALL MASKING</small><h3>They connect. Numbers don’t.</h3><p>Customers and vendors talk securely while both personal numbers stay private.</p></div>
+              </div>
+              <div className="compact-mask-flow" aria-label="Customer and vendor numbers protected by a virtual number">
+                <span><small>Customer</small><b>98••• ••721</b></span><i />
+                <strong><Icon name="shield" size={18} /><small>Virtual number</small><b>+91 80 4567 8900</b></strong><i />
+                <span><small>Vendor</small><b>99••• ••184</b></span>
+              </div>
+            </div>
           </div>
         </section>
 
-        <section className="section features-section bg-[#f7f6fa] py-[120px] max-[820px]:py-[90px] max-[560px]:py-[68px]" id="features">
-          <div className="container">
+        <section className="section features-section bg-[#f7f6fa]" id="features">
+          <div className="site-container">
             <div className="section-heading split-heading flex items-end justify-between max-[820px]:block">
               <div><div className="eyebrow eyebrow--light">Power behind every call</div><h2>More than a number.<br /><em>Your calling engine.</em></h2></div>
               <p>Everything your team needs to connect, protect and convert—without changing the phones they already use.</p>
@@ -210,32 +221,9 @@ function App() {
           </div>
         </section>
 
-        <section className="section masking-section bg-white py-[120px] max-[820px]:py-[90px] max-[560px]:py-[68px]">
-          <div className="container masking-layout grid grid-cols-[.78fr_1.22fr] items-center gap-20 max-[820px]:grid-cols-1 max-[820px]:gap-[55px] max-[560px]:gap-[38px]">
-            <div className="masking-copy">
-              <div className="eyebrow eyebrow--light">Privacy by design</div>
-              <h2>They connect.<br /><em>Numbers don’t.</em></h2>
-              <p>Your virtual number creates a secure privacy layer between every customer, vendor and agent.</p>
-              <ul className="check-list">
-                <li><span><Icon name="check" size={16} /></span> Personal numbers stay hidden</li>
-                <li><span><Icon name="check" size={16} /></span> One trusted business identity</li>
-                <li><span><Icon name="check" size={16} /></span> Safe for customers and vendors</li>
-              </ul>
-              <a className="text-link" href="#trial">Protect your team <Icon name="arrow" size={18} /></a>
-            </div>
-            <div className="masking-demo">
-              <div className="mask-person mask-person--customer"><span className="person-avatar">AK</span><div><small>Customer</small><b>98••• ••721</b></div></div>
-              <div className="mask-line mask-line--left"><i /></div>
-              <div className="mask-center"><span className="shield-rings" /><div className="shield-core"><Icon name="shield" size={28} /></div><small>Secure virtual layer</small><strong>+91 80 4567 8900</strong><span className="protected-pill"><Icon name="lock" size={12} /> Privacy protected</span></div>
-              <div className="mask-line mask-line--right"><i /></div>
-              <div className="mask-person mask-person--vendor"><span className="person-avatar">VM</span><div><small>Vendor</small><b>99••• ••184</b></div></div>
-            </div>
-          </div>
-        </section>
-
-        <section className="section pricing-section relative overflow-hidden bg-night py-[120px] text-white max-[820px]:py-[90px] max-[560px]:py-[68px]" id="pricing">
+        <section className="section pricing-section relative overflow-hidden bg-night text-white" id="pricing">
           <div className="pricing-orb" />
-          <div className="container pricing-layout relative grid grid-cols-2 items-center gap-[130px] max-[820px]:grid-cols-1 max-[820px]:gap-[55px] max-[560px]:gap-10">
+          <div className="site-container pricing-layout relative grid grid-cols-2 items-center gap-[130px] max-[820px]:grid-cols-1 max-[820px]:gap-[55px] max-[560px]:gap-10">
             <div className="pricing-copy">
               <div className="eyebrow">Simple, transparent pricing</div>
               <h2>Start small.<br /><em>Sound big.</em></h2>
@@ -255,8 +243,8 @@ function App() {
           </div>
         </section>
 
-        <section className="section importance-section bg-white py-[120px] max-[820px]:py-[90px] max-[560px]:py-[68px]">
-          <div className="container">
+        <section className="section importance-section bg-white">
+          <div className="site-container">
             <div className="section-heading centered narrow text-center">
               <div className="eyebrow eyebrow--light">Why a virtual number?</div>
               <h2>A SIM gives you a number.<br /><em>We give you a system.</em></h2>
@@ -264,65 +252,60 @@ function App() {
             <div className="comparison-wrap">
               <div className="comparison-title"><span>Capability</span><span>Personal SIM</span><span className="brand-col"><span className="brand-mark mini"><Icon name="call" size={12} /></span> Virtual Number</span></div>
               {[
-                ['Protect personal numbers', false, true], ['Route calls to your team', false, true], ['Support multiple vendors', false, true], ['Automate with Voice AI', false, true], ['Central dashboard control', false, true], ['Scale without new SIMs', false, true],
+                ['Protect personal numbers', false, true], ['Route calls to teams', false, true], ['Support multiple vendors', false, true], ['Automate with Voice AI', false, true],
               ].map(([label, personal, virtual]) => <div className="comparison-row" key={String(label)}><span>{label}</span><span>{personal ? <Icon name="check" /> : <Icon name="x" />}</span><span className="brand-col">{virtual && <Icon name="check" />}</span></div>)}
             </div>
           </div>
         </section>
 
-        <section className="section industries-section bg-[#f7f6fa] py-[120px] max-[820px]:py-[90px] max-[560px]:py-[68px]" id="industries">
-          <div className="container">
+        <section className="section industries-section bg-[#f7f6fa]" id="industries">
+          <div className="site-container">
             <div className="section-heading split-heading flex items-end justify-between max-[820px]:block">
-              <div><div className="eyebrow eyebrow--light">Industries we serve</div><h2>Built for businesses<br />that never stop.</h2></div>
-              <p>From the first lead to the final delivery, build a better calling experience at every step.</p>
+              <div><div className="eyebrow eyebrow--light">Industries + command centre</div><h2>Built for every business.<br /><em>Managed in one place.</em></h2></div>
+              <p>Serve every use case, then see agents, calls and AI performance from one clear dashboard.</p>
             </div>
-            <div className="industry-grid grid grid-cols-3 overflow-hidden rounded-[18px] border border-[#e5e2e9] max-[820px]:grid-cols-2 max-[560px]:grid-cols-1">
-              {industries.map(([name, copy, number]) => <article className="industry-card" key={name}><div><span>{number}</span><Icon name={name === 'Logistics' ? 'route' : name === 'Healthcare' ? 'call' : name === 'Education' ? 'users' : 'building'} size={24} /></div><h3>{name}</h3><p>{copy}</p><a href="#contact" aria-label={`Explore ${name}`}><Icon name="arrow" size={18} /></a></article>)}
-            </div>
-          </div>
-        </section>
-
-        <section className="section dashboard-section bg-white py-[120px] max-[820px]:py-[90px] max-[560px]:py-[68px]">
-          <div className="container">
-            <div className="section-heading centered text-center">
-              <div className="eyebrow eyebrow--light">One command centre</div>
-              <h2>Your entire calling operation.<br /><em>One clear view.</em></h2>
-              <p>See agents, vendors, call activity and AI performance without switching screens.</p>
+            <div className="industry-chips" aria-label="Industries we serve">
+              {industries.map(([name], index) => <span className={index === 0 ? 'active' : ''} key={name}><Icon name={name === 'Logistics' ? 'route' : name === 'Healthcare' ? 'call' : name === 'Education' ? 'users' : 'building'} size={17} />{name}</span>)}
             </div>
             <div className="dashboard-shell">
-              <div className="dash-sidebar"><span className="dash-logo"><Icon name="call" size={15} /></span>{['layers','call','users','bot'].map((item, index) => <span className={index === 1 ? 'active' : ''} key={item}><Icon name={item as IconName} size={16} /></span>)}</div>
+              <div className="dash-sidebar"><span className="dash-logo"><Icon name="call" size={15} /></span>{['layers', 'call', 'users', 'bot'].map((item, index) => <span className={index === 1 ? 'active' : ''} key={item}><Icon name={item as IconName} size={16} /></span>)}</div>
               <div className="dash-main">
                 <div className="dash-head"><div><small>OVERVIEW</small><b>Good morning, Aakash</b></div><span className="dash-avatar">AK</span></div>
                 <div className="dash-stats"><div><small>Total calls</small><b>2,847</b><em>+18.4%</em></div><div><small>Answered</small><b>2,594</b><em>91.1%</em></div><div><small>AI handled</small><b>1,206</b><em>+24.2%</em></div><div><small>Avg. response</small><b>1.2s</b><em>Fast</em></div></div>
-                <div className="dash-panels"><div className="chart-panel"><div><b>Call activity</b><small>Last 7 days</small></div><div className="bar-chart">{[44,68,53,82,64,92,74,87,58,76,98,70,84,62].map((height, i) => <i style={{height: `${height}%`}} key={i} />)}</div><div className="chart-labels"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div></div><div className="agents-panel"><div><b>Agents</b><small>6 online</small></div>{[['RS','Riya Sharma','On call'],['AM','Arjun Mehta','Available'],['VK','Vikram K.','Available']].map(([initials,name,status]) => <div className="agent" key={name}><span>{initials}</span><p><b>{name}</b><small>{status}</small></p><i className={status === 'On call' ? 'busy' : ''} /></div>)}</div></div>
+                <div className="dash-panels"><div className="chart-panel"><div><b>Call activity</b><small>Last 7 days</small></div><div className="bar-chart">{[44, 68, 53, 82, 64, 92, 74, 87, 58, 76, 98, 70, 84, 62].map((height, i) => <i style={{ height: `${height}%` }} key={i} />)}</div><div className="chart-labels"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div></div><div className="agents-panel"><div><b>Agents</b><small>6 online</small></div>{[['RS', 'Riya Sharma', 'On call'], ['AM', 'Arjun Mehta', 'Available'], ['VK', 'Vikram K.', 'Available']].map(([initials, name, status]) => <div className="agent" key={name}><span>{initials}</span><p><b>{name}</b><small>{status}</small></p><i className={status === 'On call' ? 'busy' : ''} /></div>)}</div></div>
               </div>
               <div className="floating-live"><i /><span><small>LIVE</small><b>18 calls active</b></span></div>
             </div>
           </div>
         </section>
 
-        <section className="section faq-section bg-[#f7f6fa] py-[120px] max-[820px]:py-[90px] max-[560px]:py-[68px]" id="faq">
-          <div className="container faq-layout grid grid-cols-[.7fr_1.3fr] gap-[100px] max-[820px]:grid-cols-1 max-[820px]:gap-[55px] max-[560px]:gap-[38px]">
-            <div className="faq-copy"><div className="eyebrow eyebrow--light">Questions, answered</div><h2>Before you<br /><em>say hello.</em></h2><p>Still curious? Our team can walk you through your exact use case.</p><a className="text-link" href="#contact">Talk to an expert <Icon name="arrow" size={18} /></a></div>
-            <div className="faq-list">{faqs.map(([question, answer], index) => <details key={question} open={index === 0}><summary>{question}<span>+</span></summary><p>{answer}</p></details>)}</div>
-          </div>
-        </section>
-
-        <section className="final-cta relative overflow-hidden bg-night py-[120px] text-center text-white max-[560px]:py-[76px]" id="contact">
-          <div className="cta-grid" />
-          <div className="cta-orb" />
-          <div className="container final-cta-inner relative">
-            <div className="eyebrow">Ready when you are</div>
-            <h2>Your customers are already calling.<br /><em>Make every call count.</em></h2>
-            <p className="text-white/75">Launch your Indian virtual number and build a calling experience your customers remember.</p>
-            <div className="hero-actions flex items-center justify-center gap-3 max-[560px]:flex-col max-[560px]:items-stretch"><a className="button button--primary" href="#top">Start 14-day free trial <Icon name="arrow" /></a><a className="button button--ghost" href="mailto:sales@example.com">Book your demo</a></div>
-            <small><Icon name="clock" size={14} /> Quick activation <span>•</span> No additional hardware</small>
+        <section className="section faq-section bg-[#f7f6fa]" id="faq">
+          <div className="site-container">
+            <div className="faq-layout grid grid-cols-[.7fr_1.3fr] gap-[100px] max-[820px]:grid-cols-1 max-[820px]:gap-[55px] max-[560px]:gap-[38px]">
+              <div className="faq-copy"><div className="eyebrow eyebrow--light">Questions, answered</div><h2>Before you<br /><em>say hello.</em></h2><p>Still curious? Our team can walk you through your exact use case.</p><a className="text-link" href="mailto:sales@example.com">Talk to our expert <Icon name="arrow" size={18} /></a></div>
+              <div className="faq-list">{faqs.slice(0, 4).map(([question, answer], index) => <details key={question} open={index === 0}><summary>{question}<span>+</span></summary><p>{answer}</p></details>)}</div>
+            </div>
+            <div className="compact-final-cta" id="contact">
+              <div><small>READY WHEN YOU ARE</small><h2>Make every customer call count.</h2><p>Launch your Indian virtual number with no additional hardware.</p></div>
+              <div><a className="button button--primary" href="#top">Start 14-day free trial <Icon name="arrow" /></a><a className="compact-demo-link" href="mailto:sales@example.com">Book demo</a></div>
+            </div>
           </div>
         </section>
       </main>
 
-      <footer>
-        <div className="container footer-inner"><a className="brand" href="#top"><span className="brand-mark"><Icon name="call" size={18} /></span><span>call<span>flow</span></span></a><p>Virtual calling infrastructure for modern Indian businesses.</p><span>© 2026 Callflow. All rights reserved.</span></div>
+      <footer className="site-footer">
+        <div className="site-container footer-main">
+          <div className="footer-brand-block">
+            <a className="brand" href="#top" aria-label="SellersLogin Virtual Numbers home"><span className="brand-mark"><Icon name="call" size={18} /></span><span className="brand-copy"><b>SellersLogin</b><small>Virtual Numbers</small></span></a>
+            <p className='text-white'>Private, intelligent calling infrastructure built for modern Indian businesses.</p>
+          </div>
+          <nav className="footer-links" aria-label="Footer navigation">
+            <div><b>Product</b><a href="#how">How it works</a><a href="#features">Features</a><a href="#pricing">Pricing</a></div>
+            <div><b>Explore</b><a href="#industries">Industries</a><a href="#faq">FAQs</a><a href="mailto:sales@example.com">Book a demo</a></div>
+            <div><b>Get started</b><a href="#trial">Start free trial</a><a href="#top">Back to top</a></div>
+          </nav>
+        </div>
+        <div className="site-container footer-bottom text-white"><span>© 2026 SellersLogin Virtual Numbers. All rights reserved.</span></div>
       </footer>
 
       <aside className="mobile-cta-bar" aria-label="Free trial offer">
