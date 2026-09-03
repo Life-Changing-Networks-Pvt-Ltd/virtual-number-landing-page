@@ -190,30 +190,117 @@ const agents = [
   },
 ];
 
-const steps = [
+const maskingSteps = [
   {
     n: "01",
     icon: "call" as const,
-    title: "Book your virtual number",
-    copy: "Choose one professional business number. No extra SIM, phone or hardware required.",
+    title: "Buy your virtual number",
+    copy: "Choose the business number your customers will call.",
   },
   {
     n: "02",
-    icon: "bot" as const,
-    title: "Make your AI agent",
-    copy: "Give it a role, knowledge and tone. Train it on the conversations your business receives.",
+    icon: "spark" as const,
+    title: "Configure call routing",
+    copy: "Open routing settings and select Forward Only mode.",
   },
   {
     n: "03",
     icon: "users" as const,
-    title: "Connect your actual number",
-    copy: "Forward important calls to any existing phone, team member or department securely.",
+    title: "Add your destinations",
+    copy: "Enter a primary number and a secondary backup number.",
   },
   {
     n: "04",
+    icon: "check" as const,
+    title: "Save and go live",
+    copy: "Calls start routing instantly while personal numbers stay private.",
+  },
+];
+
+const aiSteps = [
+  {
+    n: "01",
+    icon: "call" as const,
+    title: "Buy your virtual number",
+    copy: "Pick one professional number for every incoming customer call.",
+  },
+  {
+    n: "02",
+    icon: "bot" as const,
+    title: "Create your AI voice agent",
+    copy: "Choose its voice, role, knowledge and conversation style.",
+  },
+  {
+    n: "03",
     icon: "spark" as const,
-    title: "Switch on. Start talking.",
-    copy: "Your AI answers, qualifies, books and transfers calls around the clock.",
+    title: "Connect agent and number",
+    copy: "In Configure AI Call Forwarding, select AI Answers and your agent.",
+  },
+  {
+    n: "04",
+    icon: "check" as const,
+    title: "Save and start calls",
+    copy: "AI now answers every customer call directly, around the clock.",
+  },
+];
+
+const fallbackSteps = [
+  {
+    n: "01",
+    icon: "call" as const,
+    title: "Buy your virtual number",
+    copy: "Pick the professional number your customers will call.",
+  },
+  {
+    n: "02",
+    icon: "bot" as const,
+    title: "Create your AI voice agent",
+    copy: "Train the agent for your business, customers and call goals.",
+  },
+  {
+    n: "03",
+    icon: "users" as const,
+    title: "Configure AI + Fallback",
+    copy: "Connect the agent, then add primary and backup human numbers.",
+  },
+  {
+    n: "04",
+    icon: "check" as const,
+    title: "Save and start calls",
+    copy: "AI answers first and transfers when a human is needed.",
+  },
+];
+
+const howWorkflows = [
+  {
+    id: "masking" as const,
+    number: "01",
+    kicker: "CALL MASKING",
+    title: "Forward Only",
+    intro: "Forward calls to your existing phones while keeping personal numbers private.",
+    status: "Routing active",
+    steps: maskingSteps,
+    benefits: ["Number privacy", "Primary + backup", "No extra SIM"],
+  },
+  {
+    id: "answers" as const,
+    number: "02",
+    kicker: "AI VOICE ROUTING",
+    title: "AI Answers",
+    intro: "Your trained AI agent answers the virtual number directly—no forwarding number required.",
+    status: "Agent online",
+    steps: aiSteps,
+    benefits: ["Answers 24/7", "Instant response", "No vendor forwarding"],
+  },
+  {
+    id: "fallback" as const,
+    number: "03",
+    kicker: "AI + HUMAN ROUTING",
+    title: "AI + Fallback",
+    intro: "AI handles the call first, then transfers to your team whenever human help is needed.",
+    status: "Fallback ready",
+    steps: fallbackSteps,
+    benefits: ["AI handles routine calls", "Human handoff", "Primary + backup"],
   },
 ];
 
@@ -223,8 +310,12 @@ const faqs = [
     "A virtual number is a cloud-based business phone number. It receives calls without a physical SIM and can route them to AI agents, teams or your existing mobile numbers.",
   ],
   [
-    "Can the AI speak Hindi and Hinglish?",
-    "Yes. Your agent can be configured for English, Hindi and natural Hinglish conversations, depending on your business audience and final voice setup.",
+    "Can the AI agent speak multiple Indian languages?",
+    "Yes. The AI agent can communicate in Hindi, English, Hinglish, Punjabi, Tamil, Gujarati and other supported Indian languages. Its language, voice and speaking style can be configured for your customers and business requirements.",
+  ],
+  [
+    "Will the AI agent work 24/7?",
+    "Yes. Your AI agent can answer and manage calls around the clock, including after business hours, weekends and holidays, so your business never misses an important customer conversation.",
   ],
   [
     "Can I connect my existing mobile number?",
@@ -237,6 +328,10 @@ const faqs = [
   [
     "What happens when the AI cannot answer?",
     "You can define fallback rules. The AI can transfer the call to a human, create a callback request or capture the caller’s details for your team.",
+  ],
+  [
+    "Can the AI handle multiple calls at the same time?",
+    "Yes. The cloud-based setup can handle multiple customer calls simultaneously. The exact call capacity can be configured according to your selected plan, expected call volume and business workflow.",
   ],
   [
     "Are calls recorded and secure?",
@@ -252,11 +347,84 @@ const faqs = [
   ],
 ];
 
+const pricingPlans = [
+  {
+    name: "Starter",
+    price: "₹1,999",
+    label: "For solopreneurs and small sellers",
+    minutes: "500 AI calling minutes",
+    accent: "#171914",
+    cta: "Start with Starter",
+    popular: false,
+    features: [
+      "Quick support and free training",
+      "Free setup for up to 5 agents",
+      "Basic WhatsApp dashboard for 5 agents",
+      "5,000 marketing emails per month",
+      "Basic IVR call routing",
+      "Email and WhatsApp automation",
+      "Real-time delivery tracking",
+      "Email and WhatsApp scheduling",
+      "90 days of call recording and transcription",
+    ],
+  },
+  {
+    name: "Growth",
+    price: "₹4,999",
+    label: "For growing stores and active sales teams",
+    minutes: "1,500 AI calling minutes",
+    accent: "#c9ff45",
+    cta: "Choose Growth",
+    popular: true,
+    features: [
+      "Quick support and free training",
+      "Free setup with unlimited agents",
+      "Unlimited team logins on one number and IVR",
+      "Advanced multi-user WhatsApp dashboard",
+      "12,500 marketing emails per month",
+      "Multi-level custom IVR",
+      "Abandoned-cart and interactive automations",
+      "Real-time delivery tracking",
+      "Email and WhatsApp scheduling",
+      "Custom integrations available on request",
+      "90 days of call recording and transcription",
+    ],
+  },
+  {
+    name: "Scale",
+    price: "₹9,999",
+    label: "For high-volume brands and custom workflows",
+    minutes: "High-volume custom minutes",
+    accent: "#171914",
+    cta: "Talk to our team",
+    popular: false,
+    features: [
+      "Priority support and personalized training",
+      "Free setup with unlimited agents",
+      "Unlimited logins and department routing",
+      "Enterprise WhatsApp dashboard and broadcasts",
+      "25,000 marketing emails per month",
+      "Advanced cloud IVR and smart routing",
+      "AI-powered email and WhatsApp flows",
+      "Real-time delivery tracking",
+      "Advanced bulk campaign scheduling",
+      "Shopify, WooCommerce and CRM integrations on request",
+      "90 days of call recording and transcription",
+    ],
+  },
+];
+
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeAgent, setActiveAgent] = useState<number | null>(null);
   const [progress, setProgress] = useState(0);
+  const [visibleAgentCount, setVisibleAgentCount] = useState(4);
   const [openFaq, setOpenFaq] = useState(0);
+  const [showAllFaqs, setShowAllFaqs] = useState(false);
+  const [comingSoonContext, setComingSoonContext] = useState<string | null>(null);
+  const [activeWorkflow, setActiveWorkflow] = useState<
+    "masking" | "answers" | "fallback"
+  >("masking");
   const timerRef = useRef<number | null>(null);
   const bars = useMemo(
     () =>
@@ -299,6 +467,15 @@ function App() {
       200,
     );
   };
+  const allAgentDemosVisible = visibleAgentCount >= agents.length;
+  const toggleAgentDemos = () => {
+    if (allAgentDemosVisible) {
+      if (activeAgent !== null && activeAgent >= 4) stopAudio();
+      setVisibleAgentCount(4);
+      return;
+    }
+    setVisibleAgentCount((count) => Math.min(count + 4, agents.length));
+  };
   useEffect(
     () => () => {
       window.speechSynthesis?.cancel();
@@ -307,11 +484,29 @@ function App() {
     [],
   );
   useEffect(() => {
-    document.body.style.overflow = menuOpen ? "hidden" : "";
+    document.body.style.overflow = menuOpen || comingSoonContext ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
     };
-  }, [menuOpen]);
+  }, [menuOpen, comingSoonContext]);
+  useEffect(() => {
+    if (!comingSoonContext) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setComingSoonContext(null);
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [comingSoonContext]);
+  useEffect(() => {
+    const targetId = window.location.hash.slice(1);
+    if (!targetId) return;
+    window.requestAnimationFrame(() => {
+      const previousScrollBehavior = document.documentElement.style.scrollBehavior;
+      document.documentElement.style.scrollBehavior = "auto";
+      document.getElementById(targetId)?.scrollIntoView();
+      document.documentElement.style.scrollBehavior = previousScrollBehavior;
+    });
+  }, []);
 
   return (
     <div className="app overflow-hidden">
@@ -326,13 +521,20 @@ function App() {
           <a href="#how" onClick={() => setMenuOpen(false)}>
             How it works
           </a>
+          <a href="#pricing" onClick={() => setMenuOpen(false)}>
+            Pricing
+          </a>
           <a href="#faq" onClick={() => setMenuOpen(false)}>
             FAQs
           </a>
         </nav>
-        <a className="nav-cta flex min-h-11 items-center gap-2 rounded-xl px-4 no-underline" href="mailto:sales@sellerslogin.com">
+        <button
+          className="nav-cta flex min-h-11 items-center gap-2 rounded-xl px-4 no-underline"
+          type="button"
+          onClick={() => setComingSoonContext("AI agent builder")}
+        >
           Build my AI agent <Icon name="arrow" size={16} />
-        </a>
+        </button>
         <button
           className="menu place-items-center"
           aria-label="Toggle menu"
@@ -483,9 +685,9 @@ function App() {
             </p>
           </div>
           <div className="agents-grid mx-auto grid max-w-[1200px] grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
-            {agents.map((agent, index) => (
+            {agents.slice(0, visibleAgentCount).map((agent, index) => (
               <article
-                className={`agent-card relative flex flex-col ${activeAgent === index ? "playing" : ""}`}
+                className={`agent-card agent-card--reveal relative flex flex-col ${activeAgent === index ? "playing" : ""}`}
                 style={{ "--accent": agent.color } as React.CSSProperties}
                 key={agent.title}
               >
@@ -524,6 +726,17 @@ function App() {
               </article>
             ))}
           </div>
+          {agents.length > 4 && (
+            <button
+              className={`agents-more ${allAgentDemosVisible ? "expanded" : ""}`}
+              type="button"
+              aria-expanded={allAgentDemosVisible}
+              onClick={toggleAgentDemos}
+            >
+              <span>{allAgentDemosVisible ? "Show less" : "Load more"}</span>
+              <i><Icon name="chevron" size={17} /></i>
+            </button>
+          )}
           {/* <div className="voice-note">
             <span>
               <Icon name="spark" size={18} />
@@ -535,68 +748,186 @@ function App() {
             </p>
           </div> */}
         </section>
-        <section className="how section grid px-6 lg:px-[5vw]" id="how">
-          <div className="how-intro">
-            <span className="section-no">02 / HOW IT WORKS</span>
-            <h2>
-              From “hello” to
-              <br />
-              <em>handled.</em>
-            </h2>
-            <p>
-              Your complete calling system goes live in four clear steps. No
-              telecom headache, no new device.
-            </p>
-            <a className="btn btn-light inline-flex min-h-14 items-center justify-center gap-3 no-underline" href="mailto:sales@sellerslogin.com">
-              Watch full tutorial <Icon name="play" size={15} />
-            </a>
+        <section className="how how-redesign section" id="how">
+          <header className="how-overview">
+            <div>
+              <span className="section-no">02 / HOW IT WORKS</span>
+              <h2>One number.<br /><em>Three ways to answer.</em></h2>
+            </div>
+            <div className="how-overview-copy">
+              <p>
+                Compare every routing mode in one place. Forward calls privately,
+                let AI answer directly, or combine AI with a human fallback.
+              </p>
+              <span className="how-live"><i /> Live routing preview</span>
+            </div>
+          </header>
+
+          <div className="workflow-mobile-tabs" aria-label="Choose a routing workflow">
+            {howWorkflows.map((workflow) => (
+              <button
+                className={activeWorkflow === workflow.id ? "active" : ""}
+                type="button"
+                aria-pressed={activeWorkflow === workflow.id}
+                onClick={() => setActiveWorkflow(workflow.id)}
+                key={workflow.id}
+              >
+                <span>{workflow.number}</span>{workflow.title}
+              </button>
+            ))}
           </div>
-          <div className="steps relative">
-            <svg
-              className="step-road step-road--desktop"
-              viewBox="0 0 170 656"
-              preserveAspectRatio="none"
-              aria-hidden="true"
-            >
-              <defs>
-                <filter id="road-signal-glow" x="-200%" y="-200%" width="500%" height="500%">
-                  <feGaussianBlur stdDeviation="5" result="blur" />
-                  <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
-                </filter>
-              </defs>
-              <path id="desktop-road-path" className="step-road-track" d="M79 85 C79 135 82 170 123 191 L123 249 C123 299 120 334 79 355 L79 413 C79 463 82 498 123 519 L123 577" />
-              <circle className="step-road-signal" r="6" filter="url(#road-signal-glow)">
-                <animateMotion dur="9s" repeatCount="indefinite" calcMode="linear"><mpath href="#desktop-road-path" /></animateMotion>
-              </circle>
-            </svg>
-            <svg
-              className="step-road step-road--mobile"
-              viewBox="0 0 110 568"
-              preserveAspectRatio="none"
-              aria-hidden="true"
-            >
-              <path id="mobile-road-path" className="step-road-track" d="M62 72 C62 112 64 145 86 166 L86 214 C86 254 84 287 62 308 L62 356 C62 396 64 429 86 450 L86 498" />
-              <circle className="step-road-signal" r="5">
-                <animateMotion dur="9s" repeatCount="indefinite" calcMode="linear"><mpath href="#mobile-road-path" /></animateMotion>
-              </circle>
-            </svg>
-            {steps.map((step) => (
-              <article className="step relative grid items-start" key={step.n}>
-                <span className="step-number">{step.n}</span>
-                <div className="step-icon grid place-items-center rounded-full">
-                  <Icon name={step.icon} size={23} />
+
+          <div className="workflow-columns">
+            {howWorkflows.map((workflow) => (
+              <article
+                className={`vertical-workflow vertical-workflow--${workflow.id} ${activeWorkflow === workflow.id ? "active" : ""}`}
+                key={workflow.id}
+              >
+                <header className="vertical-workflow-head">
+                  <div className="vertical-workflow-meta">
+                    <span>{workflow.number} / {workflow.kicker}</span>
+                    <span className="workflow-status"><i /> {workflow.status}</span>
+                  </div>
+                  <h3>{workflow.title}</h3>
+                  <p>{workflow.intro}</p>
+                </header>
+
+                <div className="vertical-steps" aria-label={`${workflow.title} setup steps`}>
+                  {workflow.steps.map((step, index) => (
+                    <div className="vertical-step" key={step.n}>
+                      <div className="vertical-step-icon"><Icon name={step.icon} size={18} /><span>{step.n}</span></div>
+                      <div><h4>{step.title}</h4><p>{step.copy}</p></div>
+                      {index < workflow.steps.length - 1 && <div className="vertical-connector" aria-hidden="true"><i /></div>}
+                    </div>
+                  ))}
                 </div>
-                <div>
-                  <h3>{step.title}</h3>
-                  <p>{step.copy}</p>
+
+                <div className="workflow-outcome">
+                  {workflow.id === "masking" && (
+                    <div className="outcome-route" aria-label="Virtual number forwards to primary and backup phones">
+                      <span><Icon name="call" size={15} /> Virtual</span><i><Icon name="arrow" size={14} /></i><span>Primary</span><i><Icon name="arrow" size={14} /></i><span>Backup</span>
+                    </div>
+                  )}
+                  {workflow.id === "answers" && (
+                    <div className="outcome-route" aria-label="Customer call connects directly to AI">
+                      <span><Icon name="call" size={15} /> Customer</span><i><Icon name="arrow" size={14} /></i><span className="outcome-ai"><Icon name="bot" size={15} /> AI answers</span>
+                    </div>
+                  )}
+                  {workflow.id === "fallback" && (
+                    <div className="outcome-route" aria-label="AI answers first and hands off to a human">
+                      <span><Icon name="bot" size={15} /> AI first</span><i><Icon name="arrow" size={14} /></i><span className="outcome-human"><Icon name="users" size={15} /> Human</span>
+                    </div>
+                  )}
+                  <div className="workflow-benefits">
+                    {workflow.benefits.map((benefit) => <span key={benefit}><Icon name="check" size={12} /> {benefit}</span>)}
+                  </div>
                 </div>
               </article>
             ))}
           </div>
         </section>
+        <section className="pricing section" id="pricing">
+          <div className="pricing-shell">
+            <div className="pricing-hero">
+            <div className="pricing-head">
+              <div>
+                <span className="section-no">03 / SIMPLE QUARTERLY PRICING</span>
+                <h2>
+                  Choose the plan.
+                  <br />
+                  <em>Let your AI do the calling.</em>
+                </h2>
+              </div>
+              <div className="pricing-intro">
+                <p>
+                  Everything you need to answer, automate and convert more
+                  customer conversations—billed once every three months.
+                </p>
+                <div className="pricing-trust" aria-label="Pricing benefits">
+                  <span><Icon name="check" size={14} /> No setup fee</span>
+                  <span><Icon name="check" size={14} /> Free training included</span>
+                  <span><Icon name="check" size={14} /> Quarterly billing</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="pricing-conversation" aria-label="A customer speaking with an AI voice agent">
+              <img
+                src="/pricing-human-ai.png"
+                alt="A business professional having a conversation with an AI voice agent"
+                loading="lazy"
+              />
+              <span className="conversation-label conversation-label--human">
+                <i /> Customer
+              </span>
+              <span className="conversation-label conversation-label--ai">
+                <i /> AI agent
+              </span>
+              <div className="conversation-wave" aria-hidden="true">
+                <span className="live-pill"><i /> Live conversation</span>
+                <div>
+                  {bars.slice(0, 26).map((height, index) => (
+                    <i
+                      key={index}
+                      style={{ "--wave-height": `${Math.max(22, height)}%`, "--wave-delay": `${index * -0.055}s` } as React.CSSProperties}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+            </div>
+
+            <div className="pricing-grid">
+              {pricingPlans.map((plan) => (
+                <article
+                  className={`price-card ${plan.popular ? "price-card--popular" : ""}`}
+                  style={{ "--plan-accent": plan.accent } as React.CSSProperties}
+                  key={plan.name}
+                >
+                  {plan.popular && <span className="popular-badge">Most popular</span>}
+                  <div className="price-card-top">
+                    <span className="plan-name">{plan.name}</span>
+                    <span className="plan-dot" />
+                  </div>
+                  <p className="plan-for">{plan.label}</p>
+                  <div className="plan-price">
+                    <strong>{plan.price}</strong>
+                    <span>/ quarter</span>
+                  </div>
+                  <small>Billed every 3 months</small>
+                  <div className="minute-highlight">
+                    <span className="minute-icon"><Icon name="call" size={19} /></span>
+                    <span><b>{plan.minutes}</b><small>included with your plan</small></span>
+                  </div>
+                  <ul className="plan-preview">
+                    {plan.features.slice(0, 5).map((feature) => (
+                      <li key={feature}><Icon name="check" size={15} /> {feature}</li>
+                    ))}
+                  </ul>
+                  <details className="plan-details">
+                    <summary>View everything included <Icon name="chevron" size={15} /></summary>
+                    <ul>
+                      {plan.features.slice(5).map((feature) => (
+                        <li key={feature}><Icon name="check" size={14} /> {feature}</li>
+                      ))}
+                    </ul>
+                  </details>
+                  <button
+                    className="plan-cta"
+                    type="button"
+                    onClick={() => setComingSoonContext(`${plan.name} plan`)}
+                  >
+                    {plan.cta} <Icon name="arrow" size={17} />
+                  </button>
+                  {plan.popular && <small className="recommended-note">Recommended for most businesses</small>}
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
         <section className="faq section grid px-6 lg:px-[5vw]" id="faq">
           <div className="faq-title">
-            <span className="section-no">03 / CLEAR ANSWERS</span>
+            <span className="section-no">04 / CLEAR ANSWERS</span>
             <h2>
               Before you ask
               <br />
@@ -608,7 +939,7 @@ function App() {
             </p>
           </div>
           <div className="faq-list border-t">
-            {faqs.map(([question, answer], index) => (
+            {faqs.slice(0, showAllFaqs ? faqs.length : 6).map(([question, answer], index) => (
               <article
                 className={openFaq === index ? "open" : ""}
                 key={question}
@@ -629,9 +960,72 @@ function App() {
                 </div>
               </article>
             ))}
+            <button
+              className="faq-more"
+              type="button"
+              aria-expanded={showAllFaqs}
+              onClick={() => {
+                setShowAllFaqs((visible) => !visible);
+                if (showAllFaqs && openFaq >= 6) setOpenFaq(-1);
+              }}
+            >
+              <span>
+                {showAllFaqs
+                  ? "Show fewer"
+                  : `View ${faqs.length - 6} more questions`}
+              </span>
+              <i><Icon name="chevron" size={17} /></i>
+            </button>
           </div>
         </section>
       </main>
+      {comingSoonContext && (
+        <div
+          className="coming-soon-backdrop"
+          role="presentation"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) setComingSoonContext(null);
+          }}
+        >
+          <section
+            className="coming-soon-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="coming-soon-title"
+          >
+            <button
+              className="coming-soon-close"
+              type="button"
+              aria-label="Close dialog"
+              onClick={() => setComingSoonContext(null)}
+              autoFocus
+            >
+              <Icon name="x" size={18} />
+            </button>
+
+            <div className="coming-soon-visual" aria-hidden="true">
+              <span className="launch-orbit launch-orbit--outer"><i /><i /><i /></span>
+              <span className="launch-orbit launch-orbit--inner"><i /><i /></span>
+              <span className="launch-core"><Icon name="bot" size={34} /></span>
+              <span className="launch-wave">
+                {bars.slice(0, 11).map((height, index) => (
+                  <i key={index} style={{ height: `${Math.max(24, height)}%` }} />
+                ))}
+              </span>
+            </div>
+
+            <span className="coming-soon-context">{comingSoonContext} selected</span>
+            <p className="coming-soon-kicker">Something powerful is dialing in</p>
+            <h2 id="coming-soon-title">We’re building something worth the wait.</h2>
+
+            {/* <div className="coming-soon-actions">
+              <button type="button" onClick={() => setComingSoonContext(null)}>
+                Keep exploring
+              </button>
+            </div> */}
+          </section>
+        </div>
+      )}
       <footer className="grid items-center gap-8 px-6 lg:px-[5vw]">
         <a className="brand-logo flex shrink-0 items-center no-underline" href="#top" aria-label="SellersLogin home">
           <img src="/sellerslogin-logo.png" alt="SellersLogin" />
