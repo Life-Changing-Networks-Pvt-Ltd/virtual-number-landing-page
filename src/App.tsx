@@ -248,7 +248,7 @@ const aiSteps = [
   },
 ];
 
-const steps = [
+const fallbackSteps = [
   {
     n: "01",
     icon: "call" as const,
@@ -351,79 +351,17 @@ const faqs = [
   ],
 ];
 
-const pricingPlans = [
-  {
-    name: "Starter",
-    price: "₹1,999",
-    label: "For solopreneurs and small sellers",
-    minutes: "500 AI calling minutes",
-    accent: "#171914",
-    cta: "Start with Starter",
-    popular: false,
-    features: [
-      "Quick support and free training",
-      "Free setup for up to 5 agents",
-      "Basic WhatsApp dashboard for 5 agents",
-      "5,000 marketing emails per month",
-      "Basic IVR call routing",
-      "Email and WhatsApp automation",
-      "Real-time delivery tracking",
-      "Email and WhatsApp scheduling",
-      "90 days of call recording and transcription",
-    ],
-  },
-  {
-    name: "Growth",
-    price: "₹4,999",
-    label: "For growing stores and active sales teams",
-    minutes: "1,500 AI calling minutes",
-    accent: "#c9ff45",
-    cta: "Choose Growth",
-    popular: true,
-    features: [
-      "Quick support and free training",
-      "Free setup with unlimited agents",
-      "Unlimited team logins on one number and IVR",
-      "Advanced multi-user WhatsApp dashboard",
-      "12,500 marketing emails per month",
-      "Multi-level custom IVR",
-      "Abandoned-cart and interactive automations",
-      "Real-time delivery tracking",
-      "Email and WhatsApp scheduling",
-      "Custom integrations available on request",
-      "90 days of call recording and transcription",
-    ],
-  },
-  {
-    name: "Scale",
-    price: "₹9,999",
-    label: "For high-volume brands and custom workflows",
-    minutes: "High-volume custom minutes",
-    accent: "#171914",
-    cta: "Talk to our team",
-    popular: false,
-    features: [
-      "Priority support and personalized training",
-      "Free setup with unlimited agents",
-      "Unlimited logins and department routing",
-      "Enterprise WhatsApp dashboard and broadcasts",
-      "25,000 marketing emails per month",
-      "Advanced cloud IVR and smart routing",
-      "AI-powered email and WhatsApp flows",
-      "Real-time delivery tracking",
-      "Advanced bulk campaign scheduling",
-      "Shopify, WooCommerce and CRM integrations on request",
-      "90 days of call recording and transcription",
-    ],
-  },
-];
-
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeAgent, setActiveAgent] = useState<number | null>(null);
   const [progress, setProgress] = useState(0);
   const [visibleAgentCount, setVisibleAgentCount] = useState(4);
   const [openFaq, setOpenFaq] = useState(0);
+  const [showAllFaqs, setShowAllFaqs] = useState(false);
+  const [activeWorkflow, setActiveWorkflow] = useState<
+    (typeof howWorkflows)[number]["id"]
+  >("masking");
+  const [comingSoonContext, setComingSoonContext] = useState<string | null>(null);
   const timerRef = useRef<number | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const bars = useMemo(
@@ -519,7 +457,7 @@ function App() {
     return () => {
       document.body.style.overflow = "";
     };
-  }, [menuOpen]);
+  }, [menuOpen, comingSoonContext]);
 
   return (
     <div className="app overflow-hidden">
