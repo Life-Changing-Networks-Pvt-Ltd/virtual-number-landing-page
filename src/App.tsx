@@ -118,21 +118,23 @@ const Icon = ({ name, size = 20 }: { name: IconName; size?: number }) => {
 const agents = [
   {
     icon: "users" as const,
-    title: "AI Receptionist",
+    title: "AI Hotel Receptionist",
     tag: "Inbound",
     color: "#ff6b35",
-    duration: "00:24",
+    duration: "01:31",
+    audioSrc: `${import.meta.env.BASE_URL}audio/ai-hotel-receptionist.mp3`,
     script:
-      "Hello! Welcome to SellersLogin. I am your AI receptionist. How may I help you today? I can answer your questions, connect you to the right team, or schedule a callback.",
+      "Handles room bookings, guest inquiries and hotel services 24/7 through automated voice calls."
   },
   {
     icon: "cart" as const,
     title: "Cart Recovery",
     tag: "Ecommerce",
     color: "#b8f34b",
-    duration: "00:29",
+    duration: "00:55",
+    audioSrc: `${import.meta.env.BASE_URL}audio/cart-recovery.mp3`,
     script:
-      "Hi Riya, this is a quick call regarding the items left in your cart. Your selected product is still available, and I can help you complete the order right now. Would you like to continue?",
+      "Encourage customers with abandoned carts to complete their purchases through automated AI calls.",
   },
   {
     icon: "building" as const,
@@ -141,11 +143,11 @@ const agents = [
     color: "#8a7cff",
     duration: "00:31",
     script:
-      "Hello! The two bedroom apartment you asked about is available. It includes covered parking and is close to the metro. I can book a site visit for Saturday morning. Would that work for you?",
+      "Assists prospective buyers with property details, pricing, site visits and availability inquiries via AI automated calls.",
   },
   {
     icon: "calendar" as const,
-    title: "Builder Follow-up",
+    title: "Builder Follow-up", 
     tag: "Outbound",
     color: "#ffd15c",
     duration: "00:27",
@@ -154,21 +156,23 @@ const agents = [
   },
   {
     icon: "health" as const,
-    title: "Appointment Agent",
+    title: "Patient Appointment AI Agent",
     tag: "Healthcare",
     color: "#52d6c7",
-    duration: "00:22",
+    duration: "00:58",
+    audioSrc: `${import.meta.env.BASE_URL}audio/patient-appointment.mp3`,
     script:
-      "Welcome to City Care Clinic. Doctor Mehta is available tomorrow at eleven thirty and four in the evening. Which appointment time would you prefer?",
+      "Manages patient bookings, reschedules and clinic inquiries with automated voice assistance.",
   },
   {
     icon: "briefcase" as const,
     title: "HR Interviewer",
     tag: "HR Operations",
     color: "#ff8aa0",
-    duration: "00:34",
+    duration: "01:32",
+    audioSrc: `${import.meta.env.BASE_URL}audio/hr-interviewer.mp3`,
     script:
-      "Hello, thank you for applying for the sales executive role. I will conduct your first round interview. Please tell me about your recent experience and why you are interested in this position.",
+      "Conducts Automated initial telephonic rounds for candidates screening and gathers basic details for HR review.",
   },
   {
     icon: "spark" as const,
@@ -186,7 +190,7 @@ const agents = [
     color: "#ff935c",
     duration: "00:30",
     script:
-      "Hello! Admissions for the new batch are now open. I can explain course eligibility, fees, scholarships and available timings. Which programme are you interested in?",
+      "Guides prospective students through course details, eligibility and batch admission procedures.",
   },
 ];
 
@@ -244,7 +248,7 @@ const aiSteps = [
   },
 ];
 
-const fallbackSteps = [
+const steps = [
   {
     n: "01",
     icon: "call" as const,
@@ -420,12 +424,8 @@ function App() {
   const [progress, setProgress] = useState(0);
   const [visibleAgentCount, setVisibleAgentCount] = useState(4);
   const [openFaq, setOpenFaq] = useState(0);
-  const [showAllFaqs, setShowAllFaqs] = useState(false);
-  const [comingSoonContext, setComingSoonContext] = useState<string | null>(null);
-  const [activeWorkflow, setActiveWorkflow] = useState<
-    "masking" | "answers" | "fallback"
-  >("masking");
   const timerRef = useRef<number | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const bars = useMemo(
     () =>
       Array.from({ length: 34 }, (_, i) => 18 + ((i * 17 + i * i * 3) % 62)),
@@ -433,6 +433,14 @@ function App() {
   );
 
   const stopAudio = () => {
+    if (audioRef.current) {
+      audioRef.current.onended = null;
+      audioRef.current.onerror = null;
+      audioRef.current.ontimeupdate = null;
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      audioRef.current = null;
+    }
     window.speechSynthesis?.cancel();
     if (timerRef.current) window.clearInterval(timerRef.current);
     timerRef.current = null;
@@ -445,8 +453,24 @@ function App() {
       return;
     }
     stopAudio();
-    if (!("speechSynthesis" in window)) return;
     const agent = agents[index];
+    if (agent.audioSrc) {
+      const audio = new Audio(agent.audioSrc);
+      audioRef.current = audio;
+      audio.onended = stopAudio;
+      audio.onerror = stopAudio;
+      audio.ontimeupdate = () => {
+        if (Number.isFinite(audio.duration) && audio.duration > 0) {
+          setProgress((audio.currentTime / audio.duration) * 100);
+        }
+      };
+      setActiveAgent(index);
+      void audio.play().catch(() => {
+        if (audioRef.current === audio) stopAudio();
+      });
+      return;
+    }
+    if (!("speechSynthesis" in window)) return;
     const utterance = new SpeechSynthesisUtterance(agent.script);
     const voices = window.speechSynthesis.getVoices();
     utterance.voice =
@@ -478,6 +502,13 @@ function App() {
   };
   useEffect(
     () => () => {
+      if (audioRef.current) {
+        audioRef.current.onended = null;
+        audioRef.current.onerror = null;
+        audioRef.current.ontimeupdate = null;
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
       window.speechSynthesis?.cancel();
       if (timerRef.current) window.clearInterval(timerRef.current);
     },
@@ -488,25 +519,7 @@ function App() {
     return () => {
       document.body.style.overflow = "";
     };
-  }, [menuOpen, comingSoonContext]);
-  useEffect(() => {
-    if (!comingSoonContext) return;
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setComingSoonContext(null);
-    };
-    window.addEventListener("keydown", closeOnEscape);
-    return () => window.removeEventListener("keydown", closeOnEscape);
-  }, [comingSoonContext]);
-  useEffect(() => {
-    const targetId = window.location.hash.slice(1);
-    if (!targetId) return;
-    window.requestAnimationFrame(() => {
-      const previousScrollBehavior = document.documentElement.style.scrollBehavior;
-      document.documentElement.style.scrollBehavior = "auto";
-      document.getElementById(targetId)?.scrollIntoView();
-      document.documentElement.style.scrollBehavior = previousScrollBehavior;
-    });
-  }, []);
+  }, [menuOpen]);
 
   return (
     <div className="app overflow-hidden">
@@ -824,105 +837,6 @@ function App() {
                 </div>
               </article>
             ))}
-          </div>
-        </section>
-        <section className="pricing section" id="pricing">
-          <div className="pricing-shell">
-            <div className="pricing-hero">
-            <div className="pricing-head">
-              <div>
-                <span className="section-no">03 / SIMPLE QUARTERLY PRICING</span>
-                <h2>
-                  Choose the plan.
-                  <br />
-                  <em>Let your AI do the calling.</em>
-                </h2>
-              </div>
-              <div className="pricing-intro">
-                <p>
-                  Everything you need to answer, automate and convert more
-                  customer conversations—billed once every three months.
-                </p>
-                <div className="pricing-trust" aria-label="Pricing benefits">
-                  <span><Icon name="check" size={14} /> No setup fee</span>
-                  <span><Icon name="check" size={14} /> Free training included</span>
-                  <span><Icon name="check" size={14} /> Quarterly billing</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="pricing-conversation" aria-label="A customer speaking with an AI voice agent">
-              <img
-                src="/pricing-human-ai.png"
-                alt="A business professional having a conversation with an AI voice agent"
-                loading="lazy"
-              />
-              <span className="conversation-label conversation-label--human">
-                <i /> Customer
-              </span>
-              <span className="conversation-label conversation-label--ai">
-                <i /> AI agent
-              </span>
-              <div className="conversation-wave" aria-hidden="true">
-                <span className="live-pill"><i /> Live conversation</span>
-                <div>
-                  {bars.slice(0, 26).map((height, index) => (
-                    <i
-                      key={index}
-                      style={{ "--wave-height": `${Math.max(22, height)}%`, "--wave-delay": `${index * -0.055}s` } as React.CSSProperties}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
-            </div>
-
-            <div className="pricing-grid">
-              {pricingPlans.map((plan) => (
-                <article
-                  className={`price-card ${plan.popular ? "price-card--popular" : ""}`}
-                  style={{ "--plan-accent": plan.accent } as React.CSSProperties}
-                  key={plan.name}
-                >
-                  {plan.popular && <span className="popular-badge">Most popular</span>}
-                  <div className="price-card-top">
-                    <span className="plan-name">{plan.name}</span>
-                    <span className="plan-dot" />
-                  </div>
-                  <p className="plan-for">{plan.label}</p>
-                  <div className="plan-price">
-                    <strong>{plan.price}</strong>
-                    <span>/ quarter</span>
-                  </div>
-                  <small>Billed every 3 months</small>
-                  <div className="minute-highlight">
-                    <span className="minute-icon"><Icon name="call" size={19} /></span>
-                    <span><b>{plan.minutes}</b><small>included with your plan</small></span>
-                  </div>
-                  <ul className="plan-preview">
-                    {plan.features.slice(0, 5).map((feature) => (
-                      <li key={feature}><Icon name="check" size={15} /> {feature}</li>
-                    ))}
-                  </ul>
-                  <details className="plan-details">
-                    <summary>View everything included <Icon name="chevron" size={15} /></summary>
-                    <ul>
-                      {plan.features.slice(5).map((feature) => (
-                        <li key={feature}><Icon name="check" size={14} /> {feature}</li>
-                      ))}
-                    </ul>
-                  </details>
-                  <button
-                    className="plan-cta"
-                    type="button"
-                    onClick={() => setComingSoonContext(`${plan.name} plan`)}
-                  >
-                    {plan.cta} <Icon name="arrow" size={17} />
-                  </button>
-                  {plan.popular && <small className="recommended-note">Recommended for most businesses</small>}
-                </article>
-              ))}
-            </div>
           </div>
         </section>
         <section className="faq section grid px-6 lg:px-[5vw]" id="faq">
