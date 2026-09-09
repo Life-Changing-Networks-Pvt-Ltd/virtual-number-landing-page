@@ -10,6 +10,9 @@ type IconName =
   | "cart"
   | "check"
   | "chevron"
+  | "download"
+  | "more"
+  | "speed"
   | "education"
   | "health"
   | "menu"
@@ -61,6 +64,9 @@ const Icon = ({ name, size = 20 }: { name: IconName; size?: number }) => {
     ),
     check: <path d="m5 12 4 4L19 6" />,
     chevron: <path d="m9 18 6-6-6-6" />,
+    download: <path d="M12 3v12m-5-5 5 5 5-5M4 16v4h16v-4" />,
+    more: <><circle cx="12" cy="5" r="1" /><circle cx="12" cy="12" r="1" /><circle cx="12" cy="19" r="1" /></>,
+    speed: <><circle cx="12" cy="12" r="9" /><path d="m10 8 6 4-6 4V8Z" /></>,
     education: (
       <>
         <path d="m2 10 10-5 10 5-10 5L2 10Z" />
@@ -131,8 +137,8 @@ const agents = [
     title: "Cart Recovery",
     tag: "Ecommerce",
     color: "#b8f34b",
-    duration: "00:55",
-    audioSrc: `${import.meta.env.BASE_URL}audio/cart-recovery.mp3`,
+    duration: "01:09",
+    audioSrc: `${import.meta.env.BASE_URL}audio/cart-recovery.wav`,
     script:
       "Encourage customers with abandoned carts to complete their purchases through automated AI calls.",
   },
@@ -141,7 +147,8 @@ const agents = [
     title: "Property Advisor",
     tag: "Real Estate",
     color: "#8a7cff",
-    duration: "00:31",
+    duration: "01:26",
+    audioSrc: `${import.meta.env.BASE_URL}audio/property-advisor.mp3`,
     script:
       "Assists prospective buyers with property details, pricing, site visits and availability inquiries via AI automated calls.",
   },
@@ -150,7 +157,8 @@ const agents = [
     title: "Builder Follow-up", 
     tag: "Outbound",
     color: "#ffd15c",
-    duration: "00:27",
+    duration: "01:32",
+    audioSrc: `${import.meta.env.BASE_URL}audio/builder-follow-up.mp3`,
     script:
       "Hi Amit, I am calling to follow up on your property visit. I hope you liked the project. We have a limited offer this week, and I can connect you with an advisor to discuss the best price.",
   },
@@ -354,6 +362,9 @@ const faqs = [
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeAgent, setActiveAgent] = useState<number | null>(null);
+  const [loadingAgent, setLoadingAgent] = useState<number | null>(null);
+  const [audioMenu, setAudioMenu] = useState<number | null>(null);
+  const [playbackSpeeds, setPlaybackSpeeds] = useState<Record<number, number>>({});
   const [progress, setProgress] = useState(0);
   const [visibleAgentCount, setVisibleAgentCount] = useState(4);
   const [openFaq, setOpenFaq] = useState(0);
@@ -364,6 +375,8 @@ function App() {
   const [comingSoonContext, setComingSoonContext] = useState<string | null>(null);
   const timerRef = useRef<number | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const audioPlayersRef = useRef(new Map<number, HTMLAudioElement>());
+  const playbackRequestRef = useRef(0);
   const bars = useMemo(
     () =>
       Array.from({ length: 34 }, (_, i) => 18 + ((i * 17 + i * i * 3) % 62)),
@@ -371,10 +384,13 @@ function App() {
   );
 
   const stopAudio = () => {
+    playbackRequestRef.current += 1;
     if (audioRef.current) {
       audioRef.current.onended = null;
       audioRef.current.onerror = null;
       audioRef.current.ontimeupdate = null;
+      audioRef.current.onplaying = null;
+      audioRef.current.onwaiting = null;
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
       audioRef.current = null;
@@ -383,28 +399,51 @@ function App() {
     if (timerRef.current) window.clearInterval(timerRef.current);
     timerRef.current = null;
     setActiveAgent(null);
+    setLoadingAgent(null);
     setProgress(0);
   };
-  const playAgent = (index: number) => {
-    if (activeAgent === index) {
+  const playAgent = (index: number, speedOverride?: number) => {
+    if (speedOverride === undefined && (activeAgent === index || loadingAgent === index)) {
       stopAudio();
       return;
     }
     stopAudio();
     const agent = agents[index];
+    const speed = speedOverride ?? playbackSpeeds[index] ?? 1;
     if (agent.audioSrc) {
-      const audio = new Audio(agent.audioSrc);
+      let audio = audioPlayersRef.current.get(index);
+      if (!audio) {
+        audio = new Audio(agent.audioSrc);
+        audio.preload = "auto";
+        audioPlayersRef.current.set(index, audio);
+      }
+      const player = audio;
+      player.playbackRate = speed;
+      const request = playbackRequestRef.current;
+      const isCurrentRequest = () =>
+        playbackRequestRef.current === request && audioRef.current === player;
       audioRef.current = audio;
-      audio.onended = stopAudio;
-      audio.onerror = stopAudio;
+      audio.onended = audio.onerror = () => {
+        if (isCurrentRequest()) stopAudio();
+      };
+      audio.onplaying = () => {
+        if (!isCurrentRequest()) return;
+        setLoadingAgent(null);
+        setActiveAgent(index);
+      };
+      audio.onwaiting = () => {
+        if (!isCurrentRequest()) return;
+        setActiveAgent(null);
+        setLoadingAgent(index);
+      };
       audio.ontimeupdate = () => {
-        if (Number.isFinite(audio.duration) && audio.duration > 0) {
-          setProgress((audio.currentTime / audio.duration) * 100);
+        if (isCurrentRequest() && Number.isFinite(player.duration) && player.duration > 0) {
+          setProgress((player.currentTime / player.duration) * 100);
         }
       };
-      setActiveAgent(index);
+      setLoadingAgent(index);
       void audio.play().catch(() => {
-        if (audioRef.current === audio) stopAudio();
+        if (isCurrentRequest()) stopAudio();
       });
       return;
     }
@@ -415,11 +454,13 @@ function App() {
       voices.find((v) => /en-IN|hi-IN/i.test(v.lang)) ||
       voices.find((v) => /^en/i.test(v.lang)) ||
       null;
-    utterance.rate = 0.94;
+    utterance.rate = 0.94 * speed;
     utterance.pitch = index % 2 ? 1.05 : 0.94;
-    const estimate = Math.max(9000, agent.script.split(" ").length * 430);
-    utterance.onend = stopAudio;
-    utterance.onerror = stopAudio;
+    const estimate = Math.max(9000, agent.script.split(" ").length * 430) / speed;
+    const request = playbackRequestRef.current;
+    utterance.onend = utterance.onerror = () => {
+      if (playbackRequestRef.current === request) stopAudio();
+    };
     setActiveAgent(index);
     setProgress(1);
     window.speechSynthesis.speak(utterance);
@@ -429,29 +470,71 @@ function App() {
       200,
     );
   };
+  const changePlaybackSpeed = (index: number, speed: number) => {
+    setPlaybackSpeeds((current) => ({ ...current, [index]: speed }));
+    const player = audioPlayersRef.current.get(index);
+    if (player) player.playbackRate = speed;
+    if (!agents[index].audioSrc && activeAgent === index) playAgent(index, speed);
+  };
   const allAgentDemosVisible = visibleAgentCount >= agents.length;
   const toggleAgentDemos = () => {
+    setAudioMenu(null);
     if (allAgentDemosVisible) {
-      if (activeAgent !== null && activeAgent >= 4) stopAudio();
+      if ((activeAgent !== null && activeAgent >= 4) ||
+          (loadingAgent !== null && loadingAgent >= 4)) stopAudio();
       setVisibleAgentCount(4);
       return;
     }
     setVisibleAgentCount((count) => Math.min(count + 4, agents.length));
   };
-  useEffect(
-    () => () => {
-      if (audioRef.current) {
-        audioRef.current.onended = null;
-        audioRef.current.onerror = null;
-        audioRef.current.ontimeupdate = null;
-        audioRef.current.pause();
-        audioRef.current = null;
-      }
+  useEffect(() => {
+    // Prepare recordings before the first click and reuse their buffered players.
+    const players = audioPlayersRef.current;
+    agents.forEach((agent, index) => {
+      if (!agent.audioSrc) return;
+      const audio = new Audio();
+      audio.preload = "auto";
+      audio.src = agent.audioSrc;
+      players.set(index, audio);
+      audio.load();
+    });
+    return () => {
+      playbackRequestRef.current += 1;
+      players.forEach((audio) => {
+        audio.onended = null;
+        audio.onerror = null;
+        audio.ontimeupdate = null;
+        audio.onplaying = null;
+        audio.onwaiting = null;
+        audio.pause();
+        audio.removeAttribute("src");
+        audio.load();
+      });
+      players.clear();
+      audioRef.current = null;
       window.speechSynthesis?.cancel();
       if (timerRef.current) window.clearInterval(timerRef.current);
-    },
-    [],
-  );
+    };
+  }, []);
+  useEffect(() => {
+    if (audioMenu === null) return;
+    const closeOutside = (event: PointerEvent) => {
+      if (event.target instanceof Element && !event.target.closest("[data-audio-menu]")) {
+        setAudioMenu(null);
+      }
+    };
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      document.getElementById(`audio-options-${audioMenu}`)?.focus();
+      setAudioMenu(null);
+    };
+    document.addEventListener("pointerdown", closeOutside);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.removeEventListener("pointerdown", closeOutside);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [audioMenu]);
   useEffect(() => {
     document.body.style.overflow = menuOpen || comingSoonContext ? "hidden" : "";
     return () => {
@@ -639,7 +722,7 @@ function App() {
             {agents.slice(0, visibleAgentCount).map((agent, index) => (
               <article
                 className={`agent-card agent-card--reveal relative flex flex-col ${activeAgent === index ? "playing" : ""}`}
-                style={{ "--accent": agent.color } as React.CSSProperties}
+                style={{ "--accent": agent.color, minWidth: 0, zIndex: audioMenu === index ? 10 : undefined } as React.CSSProperties}
                 key={agent.title}
               >
                 <div className="agent-top relative flex items-center justify-between">
@@ -654,14 +737,15 @@ function App() {
                   <button
                     className="grid shrink-0 cursor-pointer place-items-center rounded-full"
                     onClick={() => playAgent(index)}
-                    aria-label={`${activeAgent === index ? "Stop" : "Play"} ${agent.title} demo`}
+                    aria-label={`${activeAgent === index || loadingAgent === index ? "Stop" : "Play"} ${agent.title} demo`}
+                    aria-busy={loadingAgent === index}
                   >
                     <Icon
-                      name={activeAgent === index ? "stop" : "play"}
+                      name={activeAgent === index || loadingAgent === index ? "stop" : "play"}
                       size={16}
                     />
                   </button>
-                  <div className="waveform">
+                  <div className="waveform" style={{ minWidth: 0 }}>
                     {bars.map((height, bar) => (
                       <i
                         key={bar}
@@ -672,8 +756,64 @@ function App() {
                       />
                     ))}
                   </div>
-                  <time>{activeAgent === index ? "LIVE" : agent.duration}</time>
+                  <time aria-live="polite">{loadingAgent === index ? "Loading…" : activeAgent === index ? "LIVE" : agent.duration}</time>
+                  <button
+                    id={`audio-options-${index}`}
+                    type="button"
+                    data-audio-menu
+                    style={{ background: audioMenu === index ? "#e8e5dd" : "transparent", color: "#171914", flexBasis: 28, width: 28 }}
+                    aria-label={`Options for ${agent.title}`}
+                    aria-expanded={audioMenu === index}
+                    aria-controls={`audio-options-panel-${index}`}
+                    onClick={() => setAudioMenu((current) => current === index ? null : index)}
+                  >
+                    <Icon name="more" size={20} />
+                  </button>
                 </div>
+                {audioMenu === index && (
+                  <div
+                    id={`audio-options-panel-${index}`}
+                    data-audio-menu
+                    className="absolute right-5 bottom-[68px] z-20 w-60 max-w-[calc(100%-40px)] rounded-xl border border-black/10 bg-white p-1.5 text-sm text-[#171914] shadow-xl"
+                    onBlur={(event) => {
+                      if (!event.currentTarget.contains(event.relatedTarget) &&
+                          event.relatedTarget?.id !== `audio-options-${index}`) setAudioMenu(null);
+                    }}
+                  >
+                    {agent.audioSrc ? (
+                      <a
+                        className="flex min-h-11 items-center gap-3 rounded-lg px-3 text-inherit no-underline hover:bg-black/5 focus-visible:outline-2"
+                        href={agent.audioSrc}
+                        download
+                        onClick={() => setAudioMenu(null)}
+                        aria-label={`Download ${agent.title} recording`}
+                      >
+                        <Icon name="download" size={18} /> Download
+                      </a>
+                    ) : (
+                      <button type="button" disabled title="Recording coming soon" className="flex min-h-11 w-full items-center gap-3 rounded-lg px-3 text-left opacity-40">
+                        <Icon name="download" size={18} /> Download
+                      </button>
+                    )}
+                    <label className="flex min-h-11 flex-wrap items-center gap-2 rounded-lg px-3 py-2 hover:bg-black/5">
+                      <Icon name="speed" size={18} />
+                      <span className="flex-1">Playback speed</span>
+                      <select
+                        aria-label={`Playback speed for ${agent.title}`}
+                        className="cursor-pointer rounded border border-black/15 bg-white p-1 text-sm"
+                        value={playbackSpeeds[index] ?? 1}
+                        onChange={(event) => changePlaybackSpeed(index, Number(event.target.value))}
+                      >
+                        {[0.5, 0.75, 1, 1.25, 1.5, 2].map((speed) => (
+                          <option key={speed} value={speed}>{speed}×</option>
+                        ))}
+                      </select>
+                    </label>
+                    {!agent.audioSrc && (
+                      <span className="block px-3 pb-2 text-xs text-black/50">Recording coming soon. Speed changes restart the voice preview.</span>
+                    )}
+                  </div>
+                )}
               </article>
             ))}
           </div>
