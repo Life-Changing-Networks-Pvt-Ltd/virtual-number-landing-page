@@ -196,7 +196,8 @@ const agents = [
     title: "Admission Guide",
     tag: "Education",
     color: "#ff935c",
-    duration: "00:30",
+    duration: "01:42",
+    audioSrc: `${import.meta.env.BASE_URL}audio/admission-guide.mp3`,
     script:
       "Guides prospective students through course details, eligibility and batch admission procedures.",
   },
@@ -359,6 +360,73 @@ const faqs = [
   ],
 ];
 
+const pricingPlans = [
+  {
+    name: "Starter",
+    price: "₹1,999",
+    label: "For solopreneurs and small sellers",
+    minutes: "500 AI calling minutes",
+    accent: "#171914",
+    cta: "Start with Starter",
+    popular: false,
+    features: [
+      "Quick support and free training",
+      "Free setup for up to 5 agents",
+      "Basic WhatsApp dashboard for 5 agents",
+      "5,000 marketing emails per month",
+      "Basic IVR call routing",
+      "Email and WhatsApp automation",
+      "Real-time delivery tracking",
+      "Email and WhatsApp scheduling",
+      "90 days of call recording and transcription",
+    ],
+  },
+  {
+    name: "Growth",
+    price: "₹4,999",
+    label: "For growing stores and active sales teams",
+    minutes: "1,500 AI calling minutes",
+    accent: "#c9ff45",
+    cta: "Choose Growth",
+    popular: true,
+    features: [
+      "Quick support and free training",
+      "Free setup with unlimited agents",
+      "Unlimited team logins on one number and IVR",
+      "Advanced multi-user WhatsApp dashboard",
+      "12,500 marketing emails per month",
+      "Multi-level custom IVR",
+      "Abandoned-cart and interactive automations",
+      "Real-time delivery tracking",
+      "Email and WhatsApp scheduling",
+      "Custom integrations available on request",
+      "90 days of call recording and transcription",
+    ],
+  },
+  {
+    name: "Scale",
+    price: "₹9,999",
+    label: "For high-volume brands and custom workflows",
+    minutes: "High-volume custom minutes",
+    accent: "#171914",
+    cta: "Talk to our team",
+    popular: false,
+    features: [
+      "Priority support and personalized training",
+      "Free setup with unlimited agents",
+      "Unlimited logins and department routing",
+      "Enterprise WhatsApp dashboard and broadcasts",
+      "25,000 marketing emails per month",
+      "Advanced cloud IVR and smart routing",
+      "AI-powered email and WhatsApp flows",
+      "Real-time delivery tracking",
+      "Advanced bulk campaign scheduling",
+      "Shopify, WooCommerce and CRM integrations on request",
+      "90 days of call recording and transcription",
+    ],
+  },
+];
+
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeAgent, setActiveAgent] = useState<number | null>(null);
@@ -366,13 +434,13 @@ function App() {
   const [audioMenu, setAudioMenu] = useState<number | null>(null);
   const [playbackSpeeds, setPlaybackSpeeds] = useState<Record<number, number>>({});
   const [progress, setProgress] = useState(0);
-  const [visibleAgentCount, setVisibleAgentCount] = useState(4);
   const [openFaq, setOpenFaq] = useState(0);
   const [showAllFaqs, setShowAllFaqs] = useState(false);
   const [activeWorkflow, setActiveWorkflow] = useState<
     (typeof howWorkflows)[number]["id"]
   >("masking");
   const [comingSoonContext, setComingSoonContext] = useState<string | null>(null);
+  const [scrolled, setScrolled] = useState(false);
   const timerRef = useRef<number | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const audioPlayersRef = useRef(new Map<number, HTMLAudioElement>());
@@ -476,17 +544,6 @@ function App() {
     if (player) player.playbackRate = speed;
     if (!agents[index].audioSrc && activeAgent === index) playAgent(index, speed);
   };
-  const allAgentDemosVisible = visibleAgentCount >= agents.length;
-  const toggleAgentDemos = () => {
-    setAudioMenu(null);
-    if (allAgentDemosVisible) {
-      if ((activeAgent !== null && activeAgent >= 4) ||
-          (loadingAgent !== null && loadingAgent >= 4)) stopAudio();
-      setVisibleAgentCount(4);
-      return;
-    }
-    setVisibleAgentCount((count) => Math.min(count + 4, agents.length));
-  };
   useEffect(() => {
     // Prepare recordings before the first click and reuse their buffered players.
     const players = audioPlayersRef.current;
@@ -542,9 +599,37 @@ function App() {
     };
   }, [menuOpen, comingSoonContext]);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 30);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.setAttribute("data-revealed", "true");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.08, rootMargin: "0px 0px -40px 0px" }
+    );
+
+    const elements = document.querySelectorAll("[data-reveal]");
+    elements.forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <div className="app overflow-hidden">
-      <header className="nav fixed z-50 flex items-center justify-between">
+      <header className={`nav fixed z-50 flex items-center justify-between ${scrolled ? "scrolled" : ""}`}>
         <a className="brand-logo flex shrink-0 items-center no-underline" href="#top" aria-label="SellersLogin home">
           <img src="/sellerslogin-logo.png" alt="SellersLogin" />
         </a>
@@ -704,7 +789,7 @@ function App() {
         </div> */}
         </section>
         <section className="agents section px-6 lg:px-[5vw]" id="agents">
-          <div className="section-head mx-auto grid max-w-[1200px] items-end gap-12">
+          <div className="section-head mx-auto grid max-w-[1200px] items-end gap-12" data-reveal>
             <div>
               <span className="section-no">01 / VOICE LAB</span>
               <h2>
@@ -719,9 +804,10 @@ function App() {
             </p>
           </div>
           <div className="agents-grid mx-auto grid max-w-[1200px] grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-4">
-            {agents.slice(0, visibleAgentCount).map((agent, index) => (
+            {agents.map((agent, index) => (
               <article
                 className={`agent-card agent-card--reveal relative flex flex-col ${activeAgent === index ? "playing" : ""}`}
+                data-reveal
                 style={{ "--accent": agent.color, minWidth: 0, zIndex: audioMenu === index ? 10 : undefined } as React.CSSProperties}
                 key={agent.title}
               >
@@ -817,17 +903,6 @@ function App() {
               </article>
             ))}
           </div>
-          {agents.length > 4 && (
-            <button
-              className={`agents-more ${allAgentDemosVisible ? "expanded" : ""}`}
-              type="button"
-              aria-expanded={allAgentDemosVisible}
-              onClick={toggleAgentDemos}
-            >
-              <span>{allAgentDemosVisible ? "Show less" : "Load more"}</span>
-              <i><Icon name="chevron" size={17} /></i>
-            </button>
-          )}
           {/* <div className="voice-note">
             <span>
               <Icon name="spark" size={18} />
@@ -840,7 +915,7 @@ function App() {
           </div> */}
         </section>
         <section className="how how-redesign section" id="how">
-          <header className="how-overview">
+          <header className="how-overview" data-reveal>
             <div>
               <span className="section-no">02 / HOW IT WORKS</span>
               <h2>One number.<br /><em>Three ways to answer.</em></h2>
@@ -854,7 +929,7 @@ function App() {
             </div>
           </header>
 
-          <div className="workflow-mobile-tabs" aria-label="Choose a routing workflow">
+          <div className="workflow-mobile-tabs" data-reveal aria-label="Choose a routing workflow">
             {howWorkflows.map((workflow) => (
               <button
                 className={activeWorkflow === workflow.id ? "active" : ""}
@@ -872,6 +947,7 @@ function App() {
             {howWorkflows.map((workflow) => (
               <article
                 className={`vertical-workflow vertical-workflow--${workflow.id} ${activeWorkflow === workflow.id ? "active" : ""}`}
+                data-reveal
                 key={workflow.id}
               >
                 <header className="vertical-workflow-head">
@@ -917,8 +993,108 @@ function App() {
             ))}
           </div>
         </section>
+        <section className="pricing section" id="pricing">
+          <div className="pricing-shell">
+            <div className="pricing-hero" data-reveal>
+            <div className="pricing-head">
+              <div>
+                <span className="section-no">03 / SIMPLE QUARTERLY PRICING</span>
+                <h2>
+                  Choose the plan.
+                  <br />
+                  <em>Let your AI do the calling.</em>
+                </h2>
+              </div>
+              <div className="pricing-intro">
+                <p>
+                  Everything you need to answer, automate and convert more
+                  customer conversations—billed once every three months.
+                </p>
+                <div className="pricing-trust" aria-label="Pricing benefits">
+                  <span><Icon name="check" size={14} /> No setup fee</span>
+                  <span><Icon name="check" size={14} /> Free training included</span>
+                  <span><Icon name="check" size={14} /> Quarterly billing</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="pricing-conversation" aria-label="A customer speaking with an AI voice agent">
+              <img
+                src="/pricing-human-ai.png"
+                alt="A business professional having a conversation with an AI voice agent"
+                loading="lazy"
+              />
+              <span className="conversation-label conversation-label--human">
+                <i /> Customer
+              </span>
+              <span className="conversation-label conversation-label--ai">
+                <i /> AI agent
+              </span>
+            </div>
+              <div className="conversation-wave" aria-hidden="true">
+                <span className="live-pill"><i /> Live conversation</span>
+                <div>
+                  {bars.slice(0, 26).map((height, index) => (
+                    <i
+                      key={index}
+                      style={{ "--wave-height": `${Math.max(22, height)}%`, "--wave-delay": `${index * -0.055}s` } as React.CSSProperties}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="pricing-grid">
+              {pricingPlans.map((plan) => (
+                <article
+                  className={`price-card ${plan.popular ? "price-card--popular" : ""}`}
+                  data-reveal
+                  style={{ "--plan-accent": plan.accent } as React.CSSProperties}
+                  key={plan.name}
+                >
+                  {plan.popular && <span className="popular-badge">Most popular</span>}
+                  <div className="price-card-top">
+                    <span className="plan-name">{plan.name}</span>
+                    <span className="plan-dot" />
+                  </div>
+                  <p className="plan-for">{plan.label}</p>
+                  <div className="plan-price">
+                    <strong>{plan.price}</strong>
+                    <span>/ quarter</span>
+                  </div>
+                  <small>Billed every 3 months</small>
+                  <div className="minute-highlight">
+                    <span className="minute-icon"><Icon name="call" size={19} /></span>
+                    <span><b>{plan.minutes}</b><small>included with your plan</small></span>
+                  </div>
+                  <ul className="plan-preview">
+                    {plan.features.slice(0, 5).map((feature) => (
+                      <li key={feature}><Icon name="check" size={15} /> {feature}</li>
+                    ))}
+                  </ul>
+                  <details className="plan-details">
+                    <summary>View everything included <Icon name="chevron" size={15} /></summary>
+                    <ul>
+                      {plan.features.slice(5).map((feature) => (
+                        <li key={feature}><Icon name="check" size={14} /> {feature}</li>
+                      ))}
+                    </ul>
+                  </details>
+                  <button
+                    className="plan-cta"
+                    type="button"
+                    onClick={() => setComingSoonContext(`${plan.name} plan`)}
+                  >
+                    {plan.cta} <Icon name="arrow" size={17} />
+                  </button>
+                  {plan.popular && <small className="recommended-note">Recommended for most businesses</small>}
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
         <section className="faq section grid px-6 lg:px-[5vw]" id="faq">
-          <div className="faq-title">
+          <div className="faq-title" data-reveal>
             <span className="section-no">04 / CLEAR ANSWERS</span>
             <h2>
               Before you ask
@@ -930,7 +1106,7 @@ function App() {
               number to work.
             </p>
           </div>
-          <div className="faq-list border-t">
+          <div className="faq-list border-t" data-reveal>
             {faqs.slice(0, showAllFaqs ? faqs.length : 6).map(([question, answer], index) => (
               <article
                 className={openFaq === index ? "open" : ""}
@@ -1018,7 +1194,7 @@ function App() {
           </section>
         </div>
       )}
-      <footer className="grid items-center gap-8 px-6 lg:px-[5vw]">
+      <footer className="grid items-center gap-8 px-6 lg:px-[5vw]" data-reveal>
         <a className="brand-logo flex shrink-0 items-center no-underline" href="#top" aria-label="SellersLogin home">
           <img src="/sellerslogin-logo.png" alt="SellersLogin" />
         </a>
