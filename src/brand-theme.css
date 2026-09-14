@@ -1,0 +1,120 @@
+/* SellersLogin identity: color overrides only, after layout and readability. */
+:root {
+  --brand-purple: #8b5cf6;
+  --brand-deep: #6d28d9;
+  --brand-lavender: #c4b5fd;
+  --brand-soft: #ede9fe;
+  --brand-border: #ddd6fe;
+  --brand-navy: #171923;
+  --ink: #0f172a;
+  --cream: #f7f5fb;
+  --acid: var(--brand-lavender);
+  --orange: var(--brand-purple);
+  --purple: var(--brand-purple);
+  --purple-dark: var(--brand-deep);
+  --reading-text: #474354;
+  --reading-muted: #615a70;
+  --line: rgba(109, 40, 217, .15);
+}
+
+body, .agents { background: var(--cream); }
+.nav, .nav.scrolled {
+  background: rgba(23, 25, 35, .97);
+  border-color: rgba(139, 92, 246, .3);
+  box-shadow: 0 15px 45px rgba(15, 23, 42, .25);
+}
+.navlinks.open, .hero, .final-cta { background: var(--brand-navy); }
+@media (max-width: 760px) {
+  .navlinks.open {
+    background: linear-gradient(145deg, #faf9ff, #ede9fe);
+    border-color: var(--brand-border);
+    box-shadow: 0 18px 40px rgba(55, 35, 90, .18);
+  }
+  .navlinks.open a {
+    color: var(--ink);
+    border-bottom-color: var(--brand-border);
+  }
+  .navlinks.open a:last-child { border-bottom-color: transparent; }
+  .navlinks.open a:hover, .navlinks.open a:focus-visible {
+    color: var(--brand-deep);
+    background: rgba(139, 92, 246, .1);
+  }
+}
+.hero::before {
+  background: radial-gradient(circle at 28% 48%, rgba(139, 92, 246, .13), transparent 32%), radial-gradient(circle at 88% 8%, rgba(196, 181, 253, .09), transparent 30%);
+}
+.hero-copy > p, .kicker, .hero-proof, .orbit-label, .orbit-core small,
+.orbit-chip small, .day-night-chip small, .orbit-metrics small { color: #e5e0ee; }
+.hero h1 em, .pricing-head h2 em { color: var(--brand-lavender); }
+.orbit-core { background: #292438; }
+.orbit-chip, .day-night-chip, .orbit-metrics { background: #252332; border-color: rgba(196, 181, 253, .2); }
+.always-on-orbit text { fill: var(--brand-lavender); }
+.core-icon, .launch-core { color: var(--ink); background: var(--brand-lavender); box-shadow: 0 0 0 9px rgba(139, 92, 246, .1); }
+.orbit-ring::before, .orbit-ring::after { background: var(--brand-purple); box-shadow: 0 0 18px rgba(139, 92, 246, .6); }
+
+.btn-dark, .btn-acid, .plan-cta, .pricing-close-cta, .coming-soon-actions > button {
+  color: #fff;
+  background: var(--brand-deep);
+  border-color: var(--brand-purple);
+  box-shadow: 0 10px 28px rgba(109, 40, 217, .18);
+}
+.btn-dark:hover, .btn-acid:hover, .plan-cta:hover, .pricing-close-cta:hover,
+.coming-soon-actions > button:hover { background: #5b21b6; }
+.nav-cta { color: var(--brand-deep); background: #fff; }
+.agent-card { background: #fff; border-color: var(--brand-border); }
+.agent-tag, .voice-note { border-color: var(--brand-border); }
+.player button:first-child { background: var(--brand-deep); color: #fff; }
+.agents-more { color: var(--brand-deep); background: linear-gradient(135deg, var(--brand-soft), #f7f5fb); border-color: var(--brand-border); box-shadow: 0 12px 30px rgba(109, 40, 217, .12); }
+.agents-more:hover { box-shadow: 0 18px 36px rgba(109, 40, 217, .18); }
+.agents-more > i { color: var(--brand-deep); border-color: var(--brand-border); }
+
+.how, .how-redesign { background: linear-gradient(120deg, #f7f5fb, #ede9fe); }
+.how-redesign h2 em { color: var(--brand-deep); }
+.vertical-workflow { background: #fff; border-color: var(--brand-border); }
+.vertical-workflow--answers {
+  --flow-accent: var(--brand-lavender);
+  --flow-signal: var(--brand-deep);
+  background: linear-gradient(145deg, #f5f3ff, #ede9fe);
+  border-color: #c4b5fd;
+}
+.vertical-workflow--answers .workflow-status { color: var(--brand-deep); background: var(--brand-soft); border-color: #c4b5fd; }
+.vertical-workflow--answers .vertical-workflow-head,
+.vertical-workflow--answers .workflow-outcome { border-color: var(--brand-border); }
+.vertical-workflow--answers .vertical-step-icon > span,
+.vertical-workflow--answers .vertical-connector > i { border-color: var(--brand-soft); }
+.vertical-workflow--answers .outcome-route { background: #ddd6fe; }
+.vertical-workflow--answers .outcome-route > span { background: #faf9ff; }
+.workflow-benefits > span, .vertical-workflow--answers .workflow-benefits > span { color: #4c3d68; background: #f7f5fb; border-color: var(--brand-border); }
+.vertical-workflow--answers .workflow-benefits svg { color: var(--brand-deep); }
+.workflow-mobile-tabs button.active { background: var(--brand-deep); color: #fff; }
+
+/* Retain the video-matched charcoal; use restrained lavender around it. */
+.pricing { background: #30393e; }
+.pricing-trust span { background: #f3efff; border-color: var(--brand-border); color: #000; text-shadow: none; }
+.pricing-trust svg { color: var(--brand-deep); }
+.live-pill, .conversation-label { background: #292638; border-color: rgba(196, 181, 253, .35); }
+.pricing-hero .conversation-wave > div > i { background: linear-gradient(to top, #8b5cf6, #c4b5fd); }
+.price-card { background: #fff; border-color: var(--brand-border); }
+.price-card--popular { background: linear-gradient(145deg, #f5f3ff, #ede9fe); border-color: #a78bfa; box-shadow: 0 16px 40px rgba(109, 40, 217, .12); }
+.price-card--popular:hover { box-shadow: 0 22px 48px rgba(109, 40, 217, .18); }
+.popular-badge { color: #fff; background: var(--brand-deep); }
+.price-card--popular .plan-dot { background: var(--brand-deep); }
+.price-card[data-plan="Starter"] .plan-cta { color: var(--ink); background: var(--brand-lavender); box-shadow: 0 10px 28px rgba(139, 92, 246, .12); }
+.price-card[data-plan="Starter"] .plan-cta:hover { background: #a78bfa; }
+.price-card[data-plan="Scale"] .plan-cta { color: #fff; background: var(--brand-navy); border-color: var(--brand-navy); box-shadow: 0 10px 28px rgba(23, 25, 35, .16); }
+.price-card[data-plan="Scale"] .plan-cta:hover { background: #2d3045; }
+.recommended-note { color: var(--brand-deep) !important; }
+.pricing-close { color: var(--ink); background: linear-gradient(105deg, #ede9fe, #ddd6fe); }
+.pricing .pricing-close .section-no, .pricing-close p { color: #55436f; }
+.faq { background: radial-gradient(circle at 90% 5%, #fff, transparent 35%), #ede9f4; }
+.faq-list, .faq-list article, .faq-list button > i { border-color: var(--brand-border); }
+.faq-list button { color: var(--ink); }
+.faq-list article.open button > i { background: var(--brand-deep); color: #fff; }
+footer { background: #efedf5; border-color: var(--brand-border); }
+footer .brand-wordmark { color: var(--ink); }
+.coming-soon-modal { background: radial-gradient(circle at 50% 0, rgba(139, 92, 246, .2), transparent 40%), var(--brand-navy); }
+.coming-soon-context { color: var(--brand-lavender); border-color: rgba(139, 92, 246, .3); background: rgba(139, 92, 246, .1); }
+.launch-wave > i { background: linear-gradient(to top, #8b5cf6, #c4b5fd); }
+
+/* Green remains a semantic live/online indicator. */
+.live-pill > i, .conversation-label--ai > i, .how-live > i, .workflow-status > i { background: #a3e635; box-shadow: 0 0 10px rgba(163, 230, 53, .4); }

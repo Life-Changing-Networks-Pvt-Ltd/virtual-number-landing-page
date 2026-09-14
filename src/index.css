@@ -586,13 +586,49 @@ footer small{color:#777168}
 }
 
 /* Supplied SellersLogin identity */
+.hero-kicker{
+  width:100%;
+  max-width:440px;
+  text-align:left;
+}
+.hero-kicker > span{flex-shrink:0}
+.hero-kicker-window{min-width:0;overflow:hidden}
+.hero-kicker-track{
+  display:flex;
+  width:max-content;
+  animation:hero-kicker-scroll 22s linear infinite;
+}
+.hero-kicker-text{flex-shrink:0;padding-right:48px;white-space:nowrap}
+.hero-copy{container-type:inline-size;width:100%}
+.hero-copy h1.hero-heading{font-size:min(4.75rem,8.4cqi)}
+.hero-heading-line{
+  display:block;
+  white-space:nowrap;
+  animation:hero-heading-appear .85s cubic-bezier(.22,1,.36,1) .1s both;
+}
+.hero-heading > .hero-heading-line:nth-child(2){animation-delay:.45s}
+@keyframes hero-kicker-scroll{
+  to{transform:translateX(-50%)}
+}
+@keyframes hero-heading-appear{
+  from{opacity:0;transform:translateY(20px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@media(prefers-reduced-motion:reduce){
+  .hero-kicker-track,.hero-heading-line{animation:none}
+  .hero-kicker-track{width:auto}
+  .hero-kicker-text{padding-right:0;white-space:normal}
+  .hero-kicker-text[aria-hidden]{display:none}
+}
 .brand-logo{
   display:flex;
   height:54px;
   align-items:center;
   flex:none;
   text-decoration:none;
+  gap:8px;
 }
+.brand-wordmark{color:#fff;font-size:22px;font-weight:800;letter-spacing:-.8px;white-space:nowrap}
 .brand-logo img{
   display:block;
   width:auto;
@@ -602,8 +638,9 @@ footer small{color:#777168}
 footer .brand-logo{
   padding:0 8px;
   border-radius:12px;
-  background:#171914;
+  background:transparent;
 }
+footer .brand-wordmark{color:var(--ink)}
 footer .brand-logo img{
   filter:none;
   opacity:1;
@@ -646,7 +683,7 @@ footer .brand-logo img{
 .pricing-trust svg{color:var(--acid)}
 .pricing-conversation{position:absolute;inset:0;height:100%;margin:0}
 .pricing-conversation::before{content:"";position:absolute;left:50%;bottom:25px;width:72%;height:52%;translate:-50% 0;border-radius:50%;background:radial-gradient(ellipse,rgba(201,255,69,.14),transparent 67%);filter:blur(14px)}
-.pricing-conversation img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;opacity:.78;filter:drop-shadow(0 25px 38px rgba(0,0,0,.42))}
+.pricing-conversation :is(img, video){position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;opacity:.78;filter:drop-shadow(0 25px 38px rgba(0,0,0,.42))}
 .conversation-label{position:absolute;z-index:3;bottom:76px;padding:7px 10px;display:flex;align-items:center;gap:7px;border:1px solid rgba(255,255,255,.12);border-radius:999px;color:#d7dbd0;background:rgba(20,22,18,.78);backdrop-filter:blur(12px);font-size:8px;font-weight:750;text-transform:uppercase;letter-spacing:.9px}
 .conversation-label>i{width:6px;height:6px;border-radius:50%;background:#fff}
 .conversation-label--human{left:11%}
@@ -714,12 +751,11 @@ footer .brand-logo img{
   .pricing-hero{height:465px;margin-inline:-20px;border-radius:20px 20px 0 0}
   .pricing-head{padding-inline:20px}
   .pricing-conversation{height:100%;margin:0}
-  .pricing-conversation img{top:90px;right:auto;bottom:auto;left:50%;width:135%;max-width:none;height:auto;translate:-50% 0;object-fit:contain;object-position:center top;opacity:.68}
+  .pricing-conversation :is(img, video){top:90px;right:auto;bottom:auto;left:50%;width:135%;max-width:none;height:auto;translate:-50% 0;object-fit:contain;object-position:center top;opacity:.68}
   .conversation-wave{display:none}
   .conversation-label{display:none}
   .pricing-grid{margin-top:-35px;grid-template-columns:1fr;gap:28px;padding-top:5px}
   .price-card,.price-card:last-child{grid-column:auto;min-height:auto}
-  .price-card--popular{order:-1}
   .pricing-close{align-items:flex-start;flex-direction:column;gap:22px}
 }
 
@@ -728,7 +764,7 @@ footer .brand-logo img{
   .pricing-trust{display:grid}
   .pricing-hero{height:445px}
   .pricing-conversation{height:100%;margin:0}
-  .pricing-conversation img{top:105px;width:138%}
+  .pricing-conversation :is(img, video){top:105px;width:138%}
   .conversation-wave{top:79%;width:32%;gap:8px}
   .conversation-wave>div{height:38px;gap:2px}
   .conversation-wave>div>i{width:2px}

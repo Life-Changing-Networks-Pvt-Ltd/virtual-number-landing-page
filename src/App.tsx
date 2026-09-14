@@ -187,9 +187,10 @@ const agents = [
     title: "Creator Commerce",
     tag: "Influencer",
     color: "#56b4ff",
-    duration: "00:26",
+    duration: "01:52",
+    audioSrc: `${import.meta.env.BASE_URL}audio/creator-commerce.mp3`,
     script:
-      "Yo! You have reached Fukra Bhai products. Our new combo includes the bestseller and free delivery. Tell me what you are looking for, and I will help you pick the right one.",
+      "Helps influencers bring their brands to CreatorKart and start selling through AI-assisted onboarding calls.",
   },
   {
     icon: "education" as const,
@@ -363,7 +364,7 @@ const faqs = [
 const pricingPlans = [
   {
     name: "Starter",
-    price: "₹1,999",
+    price: "₹2,999",
     label: "For solopreneurs and small sellers",
     minutes: "500 AI calling minutes",
     accent: "#171914",
@@ -386,7 +387,7 @@ const pricingPlans = [
     price: "₹4,999",
     label: "For growing stores and active sales teams",
     minutes: "1,500 AI calling minutes",
-    accent: "#c9ff45",
+    accent: "#8b5cf6",
     cta: "Choose Growth",
     popular: true,
     features: [
@@ -443,8 +444,63 @@ function App() {
   const [scrolled, setScrolled] = useState(false);
   const timerRef = useRef<number | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const conversationVideoRef = useRef<HTMLVideoElement | null>(null);
   const audioPlayersRef = useRef(new Map<number, HTMLAudioElement>());
   const playbackRequestRef = useRef(0);
+  useEffect(() => {
+    const video = conversationVideoRef.current;
+    if (!video) return;
+    const frame = video.parentElement;
+    const hero = frame?.parentElement;
+    const mobileVideoLayout = window.matchMedia("(max-width: 760px)");
+    const fitVideoFrame = () => {
+      if (!frame || !hero) return;
+      if (mobileVideoLayout.matches) {
+        frame.style.removeProperty("width");
+        frame.style.removeProperty("height");
+        return;
+      }
+      if (!video.videoWidth || !video.videoHeight) return;
+      const scale = Math.min(
+        hero.clientWidth / video.videoWidth,
+        hero.clientHeight / video.videoHeight,
+      );
+      frame.style.width = `${video.videoWidth * scale}px`;
+      frame.style.height = `${video.videoHeight * scale}px`;
+    };
+    const resizeObserver = new ResizeObserver(fitVideoFrame);
+    if (hero) resizeObserver.observe(hero);
+    mobileVideoLayout.addEventListener("change", fitVideoFrame);
+    video.addEventListener("loadedmetadata", fitVideoFrame);
+    fitVideoFrame();
+    const resumeVideo = () => {
+      if (document.visibilityState === "visible" && video.paused) {
+        video.muted = true;
+        void video.play().catch(() => {
+          // Browsers may defer autoplay until the next user interaction.
+        });
+      }
+    };
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) resumeVideo();
+    });
+    observer.observe(video);
+    document.addEventListener("visibilitychange", resumeVideo);
+    document.addEventListener("pointerdown", resumeVideo, { passive: true });
+    document.addEventListener("keydown", resumeVideo);
+    video.addEventListener("canplay", resumeVideo);
+    resumeVideo();
+    return () => {
+      resizeObserver.disconnect();
+      mobileVideoLayout.removeEventListener("change", fitVideoFrame);
+      video.removeEventListener("loadedmetadata", fitVideoFrame);
+      observer.disconnect();
+      document.removeEventListener("visibilitychange", resumeVideo);
+      document.removeEventListener("pointerdown", resumeVideo);
+      document.removeEventListener("keydown", resumeVideo);
+      video.removeEventListener("canplay", resumeVideo);
+    };
+  }, []);
   const bars = useMemo(
     () =>
       Array.from({ length: 34 }, (_, i) => 18 + ((i * 17 + i * i * 3) % 62)),
@@ -631,7 +687,8 @@ function App() {
     <div className="app overflow-hidden">
       <header className={`nav fixed z-50 flex items-center justify-between ${scrolled ? "scrolled" : ""}`}>
         <a className="brand-logo flex shrink-0 items-center no-underline" href="#top" aria-label="SellersLogin home">
-          <img src="/sellerslogin-logo.png" alt="SellersLogin" />
+          <img src={`${import.meta.env.BASE_URL}sellerslogin-logo.svg`} alt="SellersLogin" />
+          <b className="brand-wordmark">SellersLogin</b>
         </a>
         <nav className={menuOpen ? "navlinks open items-center gap-8" : "navlinks items-center gap-8"}>
           <a href="#agents" onClick={() => setMenuOpen(false)}>
@@ -749,14 +806,20 @@ function App() {
             </div>
           </div>
           <div className="hero-copy relative z-[3] max-w-[600px]">
-            <div className="kicker">
+            <div className="kicker hero-kicker">
               <span>
                 <Icon name="spark" size={14} />
-              </span>{" "}
-              Calls that work while you sleep
+              </span>
+              <div className="hero-kicker-window">
+                <div className="hero-kicker-track">
+                  <div className="hero-kicker-text">Calls that work while you sleep</div>
+                  <div className="hero-kicker-text" aria-hidden="true">Calls that work while you sleep</div>
+                </div>
+              </div>
             </div>
-            <h1>
-              Don’t just answer calls. <em>Make them perform.</em>
+            <h1 className="hero-heading">
+              <span className="hero-heading-line">Don’t just answer calls.</span>{" "}
+              <em className="hero-heading-line">Make them perform.</em>
             </h1>
             <p>
               One virtual number powered by an AI voice agent that talks,
@@ -1019,10 +1082,17 @@ function App() {
             </div>
 
             <div className="pricing-conversation" aria-label="A customer speaking with an AI voice agent">
-              <img
-                src="/pricing-human-ai.png"
-                alt="A business professional having a conversation with an AI voice agent"
-                loading="lazy"
+              <video
+                ref={conversationVideoRef}
+                src={`${import.meta.env.BASE_URL}pricing-human-ai.mp4`}
+                poster={`${import.meta.env.BASE_URL}pricing-human-ai.png`}
+                aria-label="A business professional having a conversation with an AI voice agent"
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="auto"
+                disablePictureInPicture
               />
               <span className="conversation-label conversation-label--human">
                 <i /> Customer
@@ -1032,7 +1102,14 @@ function App() {
               </span>
             </div>
               <div className="conversation-wave" aria-hidden="true">
-                <span className="live-pill"><i /> Live conversation</span>
+                <span className="live-pill live-pill--stacked">
+                  <i aria-hidden="true" />
+                  <span className="live-pill-copy">
+                    <span>Live conversation</span>
+                    <span>via</span>
+                    <span>SellersLogin</span>
+                  </span>
+                </span>
                 <div>
                   {bars.slice(0, 26).map((height, index) => (
                     <i
@@ -1048,6 +1125,7 @@ function App() {
               {pricingPlans.map((plan) => (
                 <article
                   className={`price-card ${plan.popular ? "price-card--popular" : ""}`}
+                  data-plan={plan.name}
                   data-reveal
                   style={{ "--plan-accent": plan.accent } as React.CSSProperties}
                   key={plan.name}
@@ -1060,9 +1138,9 @@ function App() {
                   <p className="plan-for">{plan.label}</p>
                   <div className="plan-price">
                     <strong>{plan.price}</strong>
-                    <span>/ quarter</span>
+                    <span>/ month</span>
                   </div>
-                  <small>Billed every 3 months</small>
+                  <small>Billed Quarterly</small>
                   <div className="minute-highlight">
                     <span className="minute-icon"><Icon name="call" size={19} /></span>
                     <span><b>{plan.minutes}</b><small>included with your plan</small></span>
@@ -1196,7 +1274,8 @@ function App() {
       )}
       <footer className="grid items-center gap-8 px-6 lg:px-[5vw]" data-reveal>
         <a className="brand-logo flex shrink-0 items-center no-underline" href="#top" aria-label="SellersLogin home">
-          <img src="/sellerslogin-logo.png" alt="SellersLogin" />
+          <img src={`${import.meta.env.BASE_URL}sellerslogin-logo.svg`} alt="SellersLogin" />
+          <b className="brand-wordmark">SellersLogin</b>
         </a>
         <p>© 2026 SellersLogin. All rights reserved.</p>
         <p>Virtual numbers. Intelligent conversations.</p>
