@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import DemoBooking from "./DemoBooking";
 
 type IconName =
   | "arrow"
@@ -123,14 +124,26 @@ const Icon = ({ name, size = 20 }: { name: IconName; size?: number }) => {
 
 const agents = [
   {
-    icon: "users" as const,
-    title: "AI Hotel Receptionist",
-    tag: "Inbound",
-    color: "#ff6b35",
-    duration: "01:31",
-    audioSrc: `${import.meta.env.BASE_URL}audio/ai-hotel-receptionist.mp3`,
+    icon: "call" as const,
+    title: "Do Not Disturb AI Agent",
+    tag: "Call Screening",
+    color: "#56b4ff",
+    duration: "Soon",
+    audioSrc: "",
+    recordingPending: true,
     script:
-      "Handles room bookings, guest inquiries and hotel services 24/7 through automated voice calls."
+      "AI answers incoming calls and filters out spam callers and sales pitches to help you connect with genuine leads.",
+  },
+  {
+    icon: "spark" as const,
+    title: "Creator Commerce",
+    hidden: true,
+    tag: "Influencer",
+    color: "#56b4ff",
+    duration: "01:52",
+    audioSrc: `${import.meta.env.BASE_URL}audio/creator-commerce.mp3`,
+    script:
+      "An AI voice guide that helps creators launch brands and start selling on CreatorKart.",
   },
   {
     icon: "cart" as const,
@@ -140,7 +153,7 @@ const agents = [
     duration: "01:09",
     audioSrc: `${import.meta.env.BASE_URL}audio/cart-recovery.wav`,
     script:
-      "Encourage customers with abandoned carts to complete their purchases through automated AI calls.",
+      "AI recovery calls remind shoppers about abandoned carts and help them complete purchases.",
   },
   {
     icon: "building" as const,
@@ -150,7 +163,7 @@ const agents = [
     duration: "01:26",
     audioSrc: `${import.meta.env.BASE_URL}audio/property-advisor.mp3`,
     script:
-      "Assists prospective buyers with property details, pricing, site visits and availability inquiries via AI automated calls.",
+      "An AI calling assistant that shares property details and pricing and schedules site visits.",
   },
   {
     icon: "calendar" as const,
@@ -160,17 +173,17 @@ const agents = [
     duration: "01:32",
     audioSrc: `${import.meta.env.BASE_URL}audio/builder-follow-up.mp3`,
     script:
-      "Hi Amit, I am calling to follow up on your property visit. I hope you liked the project. We have a limited offer this week, and I can connect you with an advisor to discuss the best price.",
+      "Automated AI follow-ups answer buyer questions after property visits and arrange next steps.",
   },
   {
     icon: "health" as const,
-    title: "Patient Appointment AI Agent",
+    title: "Doctor Appointment AI Agent",
     tag: "Healthcare",
     color: "#52d6c7",
     duration: "00:58",
     audioSrc: `${import.meta.env.BASE_URL}audio/patient-appointment.mp3`,
     script:
-      "Manages patient bookings, reschedules and clinic inquiries with automated voice assistance.",
+      "An AI phone assistant that books appointments and helps patients reschedule clinic visits.",
   },
   {
     icon: "briefcase" as const,
@@ -180,17 +193,17 @@ const agents = [
     duration: "01:32",
     audioSrc: `${import.meta.env.BASE_URL}audio/hr-interviewer.mp3`,
     script:
-      "Conducts Automated initial telephonic rounds for candidates screening and gathers basic details for HR review.",
+      "AI screening calls collect candidate details and assess basic qualifications for HR review.",
   },
   {
-    icon: "spark" as const,
-    title: "Creator Commerce",
-    tag: "Influencer",
-    color: "#56b4ff",
-    duration: "01:52",
-    audioSrc: `${import.meta.env.BASE_URL}audio/creator-commerce.mp3`,
+    icon: "users" as const,
+    title: "AI Hotel Receptionist",
+    tag: "Inbound",
+    color: "#ff6b35",
+    duration: "01:31",
+    audioSrc: `${import.meta.env.BASE_URL}audio/ai-hotel-receptionist.mp3`,
     script:
-      "Helps influencers bring their brands to CreatorKart and start selling through AI-assisted onboarding calls.",
+      "An AI voice receptionist that handles room bookings and guest queries around the clock.",
   },
   {
     icon: "education" as const,
@@ -200,9 +213,9 @@ const agents = [
     duration: "01:42",
     audioSrc: `${import.meta.env.BASE_URL}audio/admission-guide.mp3`,
     script:
-      "Guides prospective students through course details, eligibility and batch admission procedures.",
+      "AI admission calls explain course options and eligibility and guide students through enrollment.",
   },
-];
+].filter((agent) => !agent.hidden);
 
 const maskingSteps = [
   {
@@ -441,6 +454,7 @@ function App() {
     (typeof howWorkflows)[number]["id"]
   >("masking");
   const [comingSoonContext, setComingSoonContext] = useState<string | null>(null);
+  const [demoBookingOpen, setDemoBookingOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const timerRef = useRef<number | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -527,6 +541,7 @@ function App() {
     setProgress(0);
   };
   const playAgent = (index: number, speedOverride?: number) => {
+    if (agents[index].recordingPending) return;
     if (speedOverride === undefined && (activeAgent === index || loadingAgent === index)) {
       stopAudio();
       return;
@@ -649,11 +664,11 @@ function App() {
     };
   }, [audioMenu]);
   useEffect(() => {
-    document.body.style.overflow = menuOpen || comingSoonContext ? "hidden" : "";
+    document.body.style.overflow = menuOpen || comingSoonContext || demoBookingOpen ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
     };
-  }, [menuOpen, comingSoonContext]);
+  }, [menuOpen, comingSoonContext, demoBookingOpen]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -707,9 +722,9 @@ function App() {
         <button
           className="nav-cta flex min-h-11 items-center gap-2 rounded-xl px-4 no-underline"
           type="button"
-          onClick={() => setComingSoonContext("AI agent builder")}
+          onClick={() => { setMenuOpen(false); setDemoBookingOpen(true); }}
         >
-          Build my AI agent <Icon name="arrow" size={16} />
+          Book a Demo <Icon name="arrow" size={16} />
         </button>
         <button
           className="menu place-items-center"
@@ -884,9 +899,11 @@ function App() {
                 <p>{agent.script.split(".")[0]}.</p>
                 <div className="player relative mt-auto flex items-center gap-2.5">
                   <button
-                    className="grid shrink-0 cursor-pointer place-items-center rounded-full"
+                    className="grid shrink-0 cursor-pointer place-items-center rounded-full disabled:cursor-not-allowed disabled:opacity-40"
+                    disabled={agent.recordingPending}
+                    title={agent.recordingPending ? "Recording coming soon" : undefined}
                     onClick={() => playAgent(index)}
-                    aria-label={`${activeAgent === index || loadingAgent === index ? "Stop" : "Play"} ${agent.title} demo`}
+                    aria-label={agent.recordingPending ? `${agent.title} recording coming soon` : `${activeAgent === index || loadingAgent === index ? "Stop" : "Play"} ${agent.title} demo`}
                     aria-busy={loadingAgent === index}
                   >
                     <Icon
@@ -908,6 +925,7 @@ function App() {
                   <time aria-live="polite">{loadingAgent === index ? "Loading…" : activeAgent === index ? "LIVE" : agent.duration}</time>
                   <button
                     id={`audio-options-${index}`}
+                    disabled={agent.recordingPending}
                     type="button"
                     data-audio-menu
                     style={{ background: audioMenu === index ? "#e8e5dd" : "transparent", color: "#171914", flexBasis: 28, width: 28 }}
@@ -986,7 +1004,7 @@ function App() {
             <div className="how-overview-copy">
               <p>
                 Compare every routing mode in one place. Forward calls privately,
-                let AI answer directly, or combine AI with a human fallback.
+                let AI answer directly or combine AI with a human fallback.
               </p>
               <span className="how-live"><i /> Live routing preview</span>
             </div>
@@ -1161,7 +1179,7 @@ function App() {
                   <button
                     className="plan-cta"
                     type="button"
-                    onClick={() => setComingSoonContext(`${plan.name} plan`)}
+                    onClick={() => setDemoBookingOpen(true)}
                   >
                     {plan.cta} <Icon name="arrow" size={17} />
                   </button>
@@ -1225,6 +1243,7 @@ function App() {
           </div>
         </section>
       </main>
+      {demoBookingOpen && <DemoBooking onClose={() => setDemoBookingOpen(false)} />}
       {comingSoonContext && (
         <div
           className="coming-soon-backdrop"
@@ -1283,5 +1302,4 @@ function App() {
     </div>
   );
 }
-
 export default App;

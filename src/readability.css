@@ -299,7 +299,7 @@ footer p, footer small { font-size: .875rem; line-height: 1.6; color: var(--read
   .hero-actions, .hero-proof { justify-content: center; }
   .hero-orbit-wrap { width: min(82vw, 490px); }
   .nav { height: 64px; top: 12px; }
-  .nav-cta { display: none; }
+  .nav-cta { display: flex; }
   .how-redesign .how-overview { gap: 22px; }
   .vertical-workflow-meta { justify-content: space-between; }
 }
