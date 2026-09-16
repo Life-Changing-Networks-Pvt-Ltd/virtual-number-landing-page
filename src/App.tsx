@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import DemoBooking from "./DemoBooking";
+import type { DemoBookingPayload } from "./demoBookingApi";
 
 type IconName =
   | "arrow"
@@ -455,6 +456,8 @@ function App() {
   >("masking");
   const [comingSoonContext, setComingSoonContext] = useState<string | null>(null);
   const [demoBookingOpen, setDemoBookingOpen] = useState(false);
+  const [demoInterestedPlan, setDemoInterestedPlan] = useState("");
+  const [demoBookingSource, setDemoBookingSource] = useState<DemoBookingPayload["source"]>("navbar");
   const [scrolled, setScrolled] = useState(false);
   const timerRef = useRef<number | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -722,7 +725,7 @@ function App() {
         <button
           className="nav-cta flex min-h-11 items-center gap-2 rounded-xl px-4 no-underline"
           type="button"
-          onClick={() => { setMenuOpen(false); setDemoBookingOpen(true); }}
+          onClick={() => { setMenuOpen(false); setDemoInterestedPlan(""); setDemoBookingSource("navbar"); setDemoBookingOpen(true); }}
         >
           Book a Demo <Icon name="arrow" size={16} />
         </button>
@@ -850,6 +853,7 @@ function App() {
               <a className="text-link flex items-center gap-2" href="#how">
                 See how it works <Icon name="arrow" size={17} />
               </a>
+              <button className="demo-entry-cta" type="button" onClick={() => { setDemoInterestedPlan(""); setDemoBookingSource("hero"); setDemoBookingOpen(true); }}>Book a Demo <Icon name="arrow" size={17} /></button>
             </div>
             <div className="hero-proof flex flex-wrap items-center gap-5">
               <span>
@@ -1119,7 +1123,7 @@ function App() {
                 <i /> AI agent
               </span>
             </div>
-              <div className="conversation-wave" aria-hidden="true">
+              <div className="conversation-wave">
                 <span className="live-pill live-pill--stacked">
                   <i aria-hidden="true" />
                   <span className="live-pill-copy">
@@ -1128,7 +1132,7 @@ function App() {
                     <span>SellersLogin</span>
                   </span>
                 </span>
-                <div>
+                <div aria-hidden="true">
                   {bars.slice(0, 26).map((height, index) => (
                     <i
                       key={index}
@@ -1136,6 +1140,7 @@ function App() {
                     />
                   ))}
                 </div>
+                <button className="demo-entry-cta demo-pricing-cta" type="button" onClick={() => { setDemoInterestedPlan(""); setDemoBookingSource("pricing-section"); setDemoBookingOpen(true); }}>Book a Demo <Icon name="arrow" size={17} /></button>
               </div>
             </div>
 
@@ -1179,7 +1184,7 @@ function App() {
                   <button
                     className="plan-cta"
                     type="button"
-                    onClick={() => setDemoBookingOpen(true)}
+                    onClick={() => { setDemoInterestedPlan(plan.name); setDemoBookingSource("pricing"); setDemoBookingOpen(true); }}
                   >
                     {plan.cta} <Icon name="arrow" size={17} />
                   </button>
@@ -1243,7 +1248,7 @@ function App() {
           </div>
         </section>
       </main>
-      {demoBookingOpen && <DemoBooking onClose={() => setDemoBookingOpen(false)} />}
+      {demoBookingOpen && <DemoBooking interestedPlan={demoInterestedPlan} source={demoBookingSource} onClose={() => setDemoBookingOpen(false)} />}
       {comingSoonContext && (
         <div
           className="coming-soon-backdrop"
