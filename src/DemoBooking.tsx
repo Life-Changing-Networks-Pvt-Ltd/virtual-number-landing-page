@@ -4,17 +4,18 @@ import "./DemoCalendar.css";
 import { submitDemoBooking, type DemoBookingPayload } from "./demoBookingApi";
 
 const slots = [
-  { hour: 10, label: "10:00 AM – 11:00 AM" },
-  { hour: 11, label: "11:00 AM – 12:00 PM" },
-  { hour: 12, label: "12:00 PM – 1:00 PM" },
-  { hour: 14, label: "2:00 PM – 3:00 PM" },
-  { hour: 16, label: "4:00 PM – 5:00 PM" },
+  { hour: 11, minute: 0, label: "11:00 AM - 11:45 AM" },
+  { hour: 12, minute: 0, label: "12:00 PM - 12:45 PM" },
+  { hour: 13, minute: 0, label: "1:00 PM - 1:45 PM" },
+  { hour: 15, minute: 0, label: "3:00 PM - 3:45 PM" },
+  { hour: 16, minute: 0, label: "4:00 PM - 4:45 PM" },
+  { hour: 17, minute: 15, label: "5:15 PM - 6:00 PM" },
 ];
 const purposes = ["Handle customer enquiries", "Qualify leads", "Follow up with leads", "Book appointments", "Recover abandoned carts", "Screen job candidates", "Other"];
 const designations = ["Owner", "Director", "Manager", "CEO", "Founder"];
 const istDate = () => new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
 const dateKey = (year: number, month: number, day: number) => `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-const slotIsPast = (date: string, hour: number) => new Date(`${date}T${String(hour).padStart(2, "0")}:00:00+05:30`).getTime() <= Date.now();
+const slotIsPast = (date: string, hour: number, minute = 0) => new Date(`${date}T${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}:00+05:30`).getTime() <= Date.now();
 
 type DemoBookingProps = {
   onClose: () => void;
@@ -59,7 +60,7 @@ export default function DemoBooking({ onClose, interestedPlan = "", source = "na
   const monthIndex = month.getMonth();
   const offset = new Date(year, monthIndex, 1).getDay();
   const days = new Date(year, monthIndex + 1, 0).getDate();
-  const validSlot = slot !== null && date !== "" && !slotIsPast(date, slots[slot].hour);
+  const validSlot = slot !== null && date !== "" && !slotIsPast(date, slots[slot].hour, slots[slot].minute);
   const dateLabel = date ? new Intl.DateTimeFormat("en-IN", { dateStyle: "full", timeZone: "Asia/Kolkata" }).format(new Date(`${date}T12:00:00+05:30`)) : "";
   const summary = `${dateLabel} · ${slot !== null ? slots[slot].label : ""} IST`;
   return (
@@ -79,13 +80,13 @@ export default function DemoBooking({ onClose, interestedPlan = "", source = "na
               <div className="demo-calendar">
                 {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(day => <span className="demo-weekday" key={day}>{day}</span>)}
                 {Array.from({ length: offset }, (_, index) => <span key={`blank-${index}`} />)}
-                {Array.from({ length: days }, (_, index) => { const key = dateKey(year, monthIndex, index + 1); return <button type="button" key={key} disabled={key < today || slotIsPast(key, 16)} aria-label={new Date(`${key}T12:00:00`).toLocaleDateString("en-IN", { dateStyle: "full" })} aria-pressed={date === key} aria-current={key === today ? "date" : undefined} onClick={() => { setDate(key); setSlot(null); setError(""); }}>{index + 1}</button>; })}
+                {Array.from({ length: days }, (_, index) => { const key = dateKey(year, monthIndex, index + 1); return <button type="button" key={key} disabled={key < today || slotIsPast(key, 17, 15)} aria-label={new Date(`${key}T12:00:00`).toLocaleDateString("en-IN", { dateStyle: "full" })} aria-pressed={date === key} aria-current={key === today ? "date" : undefined} onClick={() => { setDate(key); setSlot(null); setError(""); }}>{index + 1}</button>; })}
               </div>
               <p className="demo-calendar-note">Choose a date · Blue circle marks your selection</p>
             </section>
             <section className="demo-times" aria-label="Choose a time">
               <h3>Select Your Demo Time</h3>
-              {slots.map((item, index) => <button type="button" key={item.hour} disabled={!date || slotIsPast(date, item.hour)} aria-pressed={slot === index} onClick={() => { setSlot(index); setError(""); }}>{item.label}</button>)}
+              {slots.map((item, index) => <button type="button" key={item.hour} disabled={!date || slotIsPast(date, item.hour, item.minute)} aria-pressed={slot === index} onClick={() => { setSlot(index); setError(""); }}>{item.label}</button>)}
               {!date && <small>Select a date to choose your time.</small>}
             </section>
           </div>
@@ -147,7 +148,7 @@ export default function DemoBooking({ onClose, interestedPlan = "", source = "na
           </div>
           <div className="demo-actions"><button type="button" className="demo-secondary" disabled={submitting} onClick={() => setStep(0)}>← Back</button><button className="demo-primary" type="submit" disabled={submitting}>{submitting ? "Booking..." : "Book Demo"}</button></div>
         </form>
-      </> : <div className="demo-complete"><span className="demo-check" aria-hidden="true">✓</span><h3>Thank you {details.name.trim()}</h3><p className="demo-summary">{summary}</p><p>{details.purpose.join(" · ")}</p>{bookedMeetLink && <p><a href={bookedMeetLink} target="_blank" rel="noopener noreferrer">Your Google Meet link</a></p>}<p className="demo-note">{emailQueued ? "Your booking email is queued for delivery. Please check your inbox and spam folder." : "Your booking is saved, but the confirmation email could not be queued. Please keep the meeting link above and contact our team if needed."}</p><button className="demo-primary" type="button" onClick={onClose}>Done</button></div>}
+      </> : <div className="demo-complete"><span className="demo-check" aria-hidden="true">✓</span><h3>Thank you {details.name.trim()}</h3><p className="demo-summary">{summary}</p><p>{details.purpose.join(" · ")}</p>{bookedMeetLink && <p><a href={bookedMeetLink} target="_blank" rel="noopener noreferrer">Your Google Meet link</a></p>}<p className="demo-note">{emailQueued ? "Your booking email is queued for delivery. Please check your inbox and spam folder." : "Your booking is saved. Your meeting link and confirmation email are pending. Our team will follow up if needed."}</p><button className="demo-primary" type="button" onClick={onClose}>Done</button></div>}
     </dialog>
   );
 }
