@@ -124,3 +124,9 @@
   .nav .navlinks{gap:10px}.nav .navlinks a{font-size:12px}
   .nav .nav-cta{padding:0 10px;font-size:12px}.nav .nav-cta svg{display:none}
 }
+.mobile-demo-bar{display:none}
+@media(max-width:760px){
+  .app{padding-bottom:calc(72px + env(safe-area-inset-bottom,0px))}
+  .mobile-demo-bar{position:fixed;z-index:60;left:0;right:0;bottom:0;display:flex;padding:12px max(16px,env(safe-area-inset-right,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));pointer-events:none}
+  .mobile-demo-bar .demo-entry-cta{width:100%;min-height:48px}
+}

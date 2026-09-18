@@ -1248,6 +1248,15 @@ function App() {
           </div>
         </section>
       </main>
+      <div className="mobile-demo-bar">
+        <button
+          className="demo-entry-cta"
+          type="button"
+          onClick={() => { setMenuOpen(false); setDemoInterestedPlan(""); setDemoBookingSource("navbar"); setDemoBookingOpen(true); }}
+        >
+          Book Your Demo <Icon name="arrow" size={17} />
+        </button>
+      </div>
       {demoBookingOpen && <DemoBooking interestedPlan={demoInterestedPlan} source={demoBookingSource} onClose={() => setDemoBookingOpen(false)} />}
       {comingSoonContext && (
         <div
